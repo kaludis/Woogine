@@ -1,1 +1,2 @@
 cube;../shaders/vertex_shader.glsl;../shaders/fragment_shader.glsl;../data/cube.data;../textures/cube.png
+triangle;../shaders/vertex_shader.glsl;../shaders/fragment_shader.glsl;../data/cube.data;../textures/cube.png
