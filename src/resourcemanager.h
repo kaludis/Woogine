@@ -33,22 +33,24 @@ public:
     ResourceManager()
 	: _pprogdatareader{new ProgramDataReader{}},
 	_pmeshdatareader{new MeshDataReader{}},
-	_ptexdatareader{new TextureDataReader{}},
-	_pfsresolver{new FSResolver{}}
-    {
-	_pfsresolver->set_datafile("../data/entities.data");
-    }
+	_ptexdatareader{new TextureDataReader{}}
+    {}
 
     ~ResourceManager();
     
-    Program entity_program(const std::string& entity_type);
+    Program entity_program(const std::string& vs_name,
+			   const std::string& fs_name);
 
-    Mesh entity_mesh(const std::string& entity_type);
+    Mesh entity_mesh(const std::string& mesh_name);
 
-    Texture entity_texture(const std::string& entity_type);
+    Texture entity_texture(const std::string& texture_name);
 
 private:
     Program _create_program(const ProgramRawDataPtr& prog_rd);
+
+    GLint _attrib_location(GLuint program_id, const std::string& attrib_name);
+
+    GLint _uniform_location(GLuint program_id, const std::string& uniform_name);    
 
     Mesh _create_mesh(const MeshRawDataPtr& mesh_rd);
 
@@ -66,7 +68,6 @@ private:
     ProgramDataReaderPtr _pprogdatareader;
     MeshDataReaderPtr _pmeshdatareader;
     TextureDataReaderPtr _ptexdatareader;
-    FSResolverPtr _pfsresolver;
     
     ProgramMap _program_map;
     MeshMap _mesh_map;

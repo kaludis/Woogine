@@ -1,6 +1,8 @@
 #include "meshdatareader.h"
 #include "datareaderexception.h"
 
+#include "debug.h"
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -18,7 +20,7 @@ MeshRawDataPtr MeshDataReader::read_mesh_data(const std::string& filename)
 				"' does not exists"};
     read_data("vertices", ifs);
     read_data("indices", ifs);
-    read_data("texuvcoords", ifs);    
+    read_data("texuvcoords", ifs);
 
     ifs.close();
 
@@ -33,17 +35,25 @@ MeshRawDataPtr MeshDataReader::read_mesh_data(const std::string& filename)
     pmeshdata->indices = _indices;
     pmeshdata->texuvcoords = _texuvcoords;
 
+    _vertices.clear();
+    _indices.clear();
+    _texuvcoords.clear();
+
     return MeshRawDataPtr{pmeshdata};
 }
 
 void MeshDataReader::read_data(const std::string& data_type, std::ifstream& ifs)
 {
+    bool out_of_section{false};
     std::string line{};
-    while (std::getline(ifs, line)) {
+    while (std::getline(ifs, line) && !out_of_section) {
 	if (line.size() && (line[0] == '#') &&
 	    (line.find(data_type) != std::string::npos)) {
-	    while (std::getline(ifs, line)) {		
-		if (!line.size()) break;
+	    while (std::getline(ifs, line)) {
+		if (!line.size() || (line[0] == '#')) {
+		    out_of_section = true;
+		    break;
+		}
 		float value{0.0f};
 		std::stringstream ss{line};
 		while (ss >> value) {

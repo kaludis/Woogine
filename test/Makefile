@@ -12,7 +12,7 @@ test:
 	../src/resourcemanager.cc \
 	../src/texturedatareader.cc \
 	../src/programdatareader.cc \
-	../src/fsresolver.cc \
+	../src/entitycreator.cc \
 	../src/meshdatareader.cc \
 	../src/stringutl.cc \
 	-o test $(LDLIBS) 

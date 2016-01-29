@@ -1,16 +1,13 @@
-#include "../src/resourcemanager.h"
+#include "../src/entitycreator.h"
+#include "../src/entity.h"
+#include "../src/entityresources.h"
 
 #include "../src/datareaderexception.h"
 #include "../src/resourcemanagerexception.h"
-#include "../src/texturedatareaderexception.h"
-#include "../src/fsresolverexception.h"
-
-#include "../src/program.h"
+#include "../src/entitycreatorexc.h"
 
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
+#include <cstdlib>
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
@@ -20,6 +17,21 @@ using namespace std;
 
 constexpr int screen_width = 1024;
 constexpr int screen_height = 768;
+
+void print_entity(const EntityPtr& pentity)
+{
+    const EntityResources& res = pentity->resources();
+    cout << "\nPrint entity '" << pentity->name() << "':" << endl;
+    cout << "program: " << res.program.program_id << endl
+	 << "attrib_coord3d: " << res.program.attrib_coord3d << endl
+	 << "attrib_texcoord: " << res.program.attrib_texcoord << endl
+	 << "uniform_mvp: " << res.program.uniform_mvp << endl
+	 << "uniform_sampler3d: " << res.program.uniform_sampler2d << endl
+	 << "buffer: " << res.mesh.buffer_id << endl
+	 << "index_buffer: " << res.mesh.indexbuffer_id << endl
+	 << "index count: " << res.mesh.index_count << endl
+	 << "texture: " << res.texture.tex_id << endl;
+}
 
 int main()
 {
@@ -41,20 +53,29 @@ int main()
     }
 
     try {
-	ResourceManager resman{};
-	Program prog = resman.entity_program("cube");
-	cout << "prog: " << prog.program_id << endl;
+	EntityCreator ecreator{};	
+	ecreator.set_entity_file("../data/entities.data");
 	
-	Mesh mesh = resman.entity_mesh("cube");
-	cout << "mesh.buffer: " << mesh.buffer_id << endl
-	     << "mesh.indexbuffer: " << mesh.indexbuffer_id << endl
-	     << "mesh.index_count: " << mesh.index_count << endl;
+	EntityPtr ent1 = ecreator.create_entity("cube");
+	print_entity(ent1);
 	
-	Texture tex = resman.entity_texture("cube");
-	cout << "tex: " << tex.tex_id << endl;
-    } catch (const FSResolverException& ex) {
-	cout<< ex.what() << endl;
+	EntityPtr ent2 = ecreator.create_entity("triangle");
+	print_entity(ent2);
+	
+	
+    } catch (const DataReaderException& ex) {
+	cout << "DataReader: " << ex.what() << endl;
+	return EXIT_FAILURE;
+    } catch (const ResourceManagerException& ex) {
+	cout << "ResourceManager: " << ex.what() << endl;
+	return EXIT_FAILURE;
+    } catch (const EntityCreatorException& ex) {
+	cout << "EntityCreator: " << ex.what() << endl;
+	return EXIT_FAILURE;
+    } catch (...) {
+	cout << "Unknown exception" << endl;
+	return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

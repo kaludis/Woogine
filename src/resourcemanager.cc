@@ -13,32 +13,34 @@ ResourceManager::~ResourceManager()
     _release_resources();
 }
 
-Program ResourceManager::entity_program(const std::string& entity_type)
+Program ResourceManager::entity_program(const std::string& vs_name,
+					const std::string& fs_name)
 {
-    auto it = _program_map.find(entity_type);
+    std::string prog_name = vs_name + fs_name;
+    auto it = _program_map.find(prog_name);
     if (it == _program_map.end()) {
-	FSResolver::ProgramFiles pfiles =
-	    _pfsresolver->program_files(entity_type);
+	// FSResolver::ProgramFiles pfiles =
+	//     _pfsresolver->program_files(entity_type);
 
 	ProgramRawDataPtr prog_rd =
-	    _pprogdatareader->read_program_data(pfiles.vs_file, pfiles.fs_file);
+	    _pprogdatareader->read_program_data(vs_name, fs_name);
 
 	Program new_program = _create_program(prog_rd);
 	
-	_program_map[entity_type] = new_program;
+	_program_map[prog_name] = new_program;
 	return new_program;
     } else {
 	return it->second;
     }
 }
 
-Mesh ResourceManager::entity_mesh(const std::string& entity_type)
+Mesh ResourceManager::entity_mesh(const std::string& mesh_name)
 {
-    auto it = _mesh_map.find(entity_type);;
+    auto it = _mesh_map.find(mesh_name);
     if (it == _mesh_map.end()) {
-	std::string mesh_file = _pfsresolver->mesh_file(entity_type);
+	//	std::string mesh_file = _pfsresolver->mesh_file(entity_type);
 	
-	MeshRawDataPtr mesh_rd = _pmeshdatareader->read_mesh_data(mesh_file);
+	MeshRawDataPtr mesh_rd = _pmeshdatareader->read_mesh_data(mesh_name);
 	
 	Mesh new_mesh = _create_mesh(mesh_rd);
 	
@@ -50,20 +52,20 @@ Mesh ResourceManager::entity_mesh(const std::string& entity_type)
 	    throw ResourceManagerException{"Could not create OpenGL buffers for mesh"};
 	}
 	    
-	_mesh_map[entity_type] = new_mesh;
+	_mesh_map[mesh_name] = new_mesh;
 	return new_mesh;
     } else {
 	return it->second;
     }
 }
 
-Texture ResourceManager::entity_texture(const std::string& entity_type)
+Texture ResourceManager::entity_texture(const std::string& texture_name)
 {
-    auto it = _texture_map.find(entity_type);
+    auto it = _texture_map.find(texture_name);
     if (it == _texture_map.end()) {
-	std::string tex_file = _pfsresolver->texture_file(entity_type);
+	//	std::string tex_file = _pfsresolver->texture_file(entity_type);
 	
-	TextureRawDataPtr tex_rd = _ptexdatareader->read_texture_data(tex_file);
+	TextureRawDataPtr tex_rd = _ptexdatareader->read_texture_data(texture_name);
 	
 	Texture new_tex = _create_texture(tex_rd);
 	
@@ -73,7 +75,7 @@ Texture ResourceManager::entity_texture(const std::string& entity_type)
 	    throw ResourceManagerException{"Could not create OpenGL texture"};
 	}
     
-	_texture_map[entity_type] = new_tex;
+	_texture_map[texture_name] = new_tex;
 	return new_tex;
     } else {
 	return it->second;
@@ -82,6 +84,8 @@ Texture ResourceManager::entity_texture(const std::string& entity_type)
 
 Program ResourceManager::_create_program(const ProgramRawDataPtr& prog_rd)
 {
+    Program new_prog{0, -1, -1, -1, -1};
+    
     GLuint vs_id = _create_shader(prog_rd->vs_source, GL_VERTEX_SHADER);
 
     if (!vs_id) throw ResourceManagerException{"Vertex shader compile error"};
@@ -89,10 +93,30 @@ Program ResourceManager::_create_program(const ProgramRawDataPtr& prog_rd)
     GLuint fs_id = _create_shader(prog_rd->fs_source, GL_FRAGMENT_SHADER);
     if (!fs_id) throw ResourceManagerException{"Fragment shader compile error"};
 
-    GLuint program_id = _link_program(vs_id, fs_id);
-    if (!program_id) throw ResourceManagerException{"Shader program link error"};
+    new_prog.program_id = _link_program(vs_id, fs_id);
+    if (!new_prog.program_id) throw ResourceManagerException{"Shader program link error"};
 
-    return Program{program_id};
+    new_prog.attrib_coord3d = _attrib_location(new_prog.program_id, "coord3d");
+    if (new_prog.attrib_coord3d == -1) {
+	throw ResourceManagerException{"Could not get attribute location for 'coord3d' attribute"};
+    }
+
+    new_prog.attrib_texcoord = _attrib_location(new_prog.program_id, "texcoord");
+    if (new_prog.attrib_texcoord == -1) {
+	throw ResourceManagerException{"Could not get attribute location for 'texcoord' attribute"};
+    }
+
+    new_prog.uniform_mvp = _uniform_location(new_prog.program_id, "mvp");
+    if (new_prog.uniform_mvp == -1) {
+	throw ResourceManagerException{"Could not get uniform location for 'mvp' uniform"};
+    }
+
+    new_prog.uniform_sampler2d = _uniform_location(new_prog.program_id, "sampler2d");    
+    if (new_prog.uniform_sampler2d == -1) {
+	throw ResourceManagerException{"Could not get uniform location for 'sampler2d' uniform"};
+    }
+
+    return new_prog;
 }
 
 Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
@@ -265,6 +289,26 @@ void ResourceManager::_print_log(GLuint object)
 
 	std::string log_text{std::begin(log), std::end(log)};
 	DEBUG_PRINT("%s\n", log_text.c_str());
+}
+
+GLint
+ResourceManager::_attrib_location(GLuint program_id,
+				     const std::string& attrib_name)
+{
+    GLint attrib_id = glGetAttribLocation(program_id, attrib_name.c_str());
+    CHECK_ERR();
+    DEBUG_PRINT("Get new attribut location: %d\n", attrib_id);
+    return attrib_id;
+}
+
+GLint
+ResourceManager::_uniform_location(GLuint program_id,
+				      const std::string& uniform_name)
+{
+    GLint uniform_id = glGetUniformLocation(program_id, uniform_name.c_str());
+    CHECK_ERR();
+    DEBUG_PRINT("Get new uniform location: %d\n", uniform_id);
+    return uniform_id;
 }
 
 void ResourceManager::_release_resources()
