@@ -1,5 +1,6 @@
 #include "texturedatareader.h"
 #include "datareaderexception.h"
+#include "imageloader.h"
 
 #include <cstring>
 
@@ -10,20 +11,13 @@ TextureDataReader::read_texture_data(const std::string& filename)
 {
     if (!filename.size()) throw DataReaderException{"Empty file name"};
 
-    SDL_Surface* surface = IMG_Load(filename.c_str());
-    if (!surface) throw DataReaderException{"Could not load image from file '" +
-			  filename + "'"};
-
-    int texsize = surface->h * surface->pitch;
-    std::vector<unsigned char> data(texsize);
-    std::memcpy(data.data(), surface->pixels, texsize);
+    ImageLoader image_loader{};
+    ImageLoader::ImageData image_data = image_loader.read_data(filename);
 
     TextureRawData* ptexraw = new TextureRawData{};
-    ptexraw->data = data;
-    ptexraw->width = surface->w;
-    ptexraw->height = surface->h;
-
-    SDL_FreeSurface(surface);
+    ptexraw->data = image_data.data;
+    ptexraw->width = image_data.width;
+    ptexraw->height = image_data.height;
     
     return TextureRawDataPtr{ptexraw};
 }

@@ -17,6 +17,6 @@ private:
     std::string _filename;
 
     std::vector<float> _vertices;
-    std::vector<unsigned int> _indices;
+    std::vector<unsigned short> _indices;
     std::vector<float> _texuvcoords;
 };

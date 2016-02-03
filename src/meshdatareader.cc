@@ -47,25 +47,25 @@ void MeshDataReader::read_data(const std::string& data_type, std::ifstream& ifs)
     bool out_of_section{false};
     std::string line{};
     while (std::getline(ifs, line) && !out_of_section) {
-	if (line.size() && (line[0] == '#') &&
-	    (line.find(data_type) != std::string::npos)) {
+	if ((line[0] == '#') && (line.find(data_type) != std::string::npos)) {
 	    while (std::getline(ifs, line)) {
 		if (!line.size() || (line[0] == '#')) {
 		    out_of_section = true;
 		    break;
 		}
+
 		float value{0.0f};
 		std::stringstream ss{line};
 		while (ss >> value) {
 		    if (data_type == "vertices") {
 			_vertices.push_back(value);
 		    } else if (data_type == "indices") {
-			_indices.push_back(static_cast<int>(value));
+			_indices.push_back(static_cast<unsigned short>(value));
 		    } else if (data_type == "texuvcoords") {
 			_texuvcoords.push_back(value);
 		    }
 
-		    if (ss.peek() == ',' || ss.peek() == ' ') ss.ignore();
+		    if (ss.peek() == ' ') ss.ignore();
 		}
 	    }
 	    break;

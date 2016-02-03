@@ -5,7 +5,7 @@
 
 struct MeshRawData {
     std::vector<float> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<unsigned short> indices;
     std::vector<float> texuvcoords;
 };
 

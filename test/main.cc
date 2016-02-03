@@ -6,17 +6,18 @@
 #include "../src/resourcemanagerexception.h"
 #include "../src/entitycreatorexc.h"
 
+#include "../src/core.h"
+#include "../src/window.h"
+#include "../src/renderer.h"
+#include "../src/scene.h"
+#include "../src/camera.h"
+
+#include "../src/debug.h"
+
 #include <iostream>
 #include <cstdlib>
 
-#include <GL/glew.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 using namespace std;
-
-constexpr int screen_width = 1024;
-constexpr int screen_height = 768;
 
 void print_entity(const EntityPtr& pentity)
 {
@@ -35,33 +36,24 @@ void print_entity(const EntityPtr& pentity)
 
 int main()
 {
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("My not first triangle",
-					  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-					  screen_width, screen_height,
-					  SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
-    SDL_GL_CreateContext(window);
-
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 1);
-
-    GLenum glew_status = glewInit();
-
-    if (glew_status != GLEW_OK) {
-	cerr << "Error: glewInit: " << glewGetErrorString(glew_status) << endl;
-	return EXIT_FAILURE;
-    }
-
+    cout << "size of Entity: " << sizeof(Entity) << endl;
+    
     try {
-	EntityCreator ecreator{};	
+	Core core{};
+	core.set_window(WindowPtr{new Window{}});
+	core.set_renderer(RendererPtr{new Renderer{}});
+	core.set_camera(CameraPtr{new Camera{}});
+	
+	EntityCreator ecreator{};
 	ecreator.set_entity_file("../data/entities.data");
-	
-	EntityPtr ent1 = ecreator.create_entity("cube");
-	print_entity(ent1);
-	
-	EntityPtr ent2 = ecreator.create_entity("triangle");
-	print_entity(ent2);
-	
+
+	ScenePtr scene{new Scene{}};
+
+	scene->add_entity(ecreator.create_entity("cube"));
+
+	while (core.is_running()) {
+	    core.run_scene(scene);
+	}
 	
     } catch (const DataReaderException& ex) {
 	cout << "DataReader: " << ex.what() << endl;
@@ -71,9 +63,6 @@ int main()
 	return EXIT_FAILURE;
     } catch (const EntityCreatorException& ex) {
 	cout << "EntityCreator: " << ex.what() << endl;
-	return EXIT_FAILURE;
-    } catch (...) {
-	cout << "Unknown exception" << endl;
 	return EXIT_FAILURE;
     }
 

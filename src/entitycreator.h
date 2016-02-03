@@ -15,7 +15,7 @@ public:
 	: _presman{new ResourceManager{}}
     {}
 
-    EntityPtr create_entity(const std::string& entity_name);
+    Entity create_entity(const std::string& entity_name);
 
     void set_entity_file(const std::string& entity_file);
 

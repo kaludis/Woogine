@@ -17,9 +17,13 @@ public:
 	: _model_matrix(1.0f)
     {}
 
+    void update(float dt);
+
     const EntityResources& resources() const;
 
     const std::string& name() const;
+
+    const glm::mat4& model_matrix() const;
 
 private:
     std::string _name;
@@ -40,4 +44,10 @@ inline
 const std::string& Entity::name() const
 {
     return _name;
+}
+
+inline
+const glm::mat4& Entity::model_matrix() const
+{
+    return _model_matrix;
 }

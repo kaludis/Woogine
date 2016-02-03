@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-EntityPtr
+Entity
 EntityCreator::create_entity(const std::string& entity_name)
 {
     if (!entity_name.size()) {
@@ -16,22 +16,13 @@ EntityCreator::create_entity(const std::string& entity_name)
 	_entity_files();
     }
 
-    // DEBUG_PRINT("files:\n%s\n%s\n%s\n%s\n",
-    // 		_vs_file.c_str(),
-    // 		_fs_file.c_str(),
-    // 		_mesh_data_file.c_str(),
-    // 		_texture_file.c_str());
-    
-    EntityResources res;
-    res.program = _presman->entity_program(_vs_file, _fs_file);
-    res.mesh = _presman->entity_mesh(_mesh_data_file);
-    res.texture = _presman->entity_texture(_texture_file);
+    Entity entity;
+    entity._res.program = _presman->entity_program(_vs_file, _fs_file);
+    entity._res.mesh = _presman->entity_mesh(_mesh_data_file);
+    entity._res.texture = _presman->entity_texture(_texture_file);
+    entity._name = _entity_name;
 
-    Entity* entity = new Entity;
-    entity->_res = res;
-    entity->_name = _entity_name;
-
-    return EntityPtr{entity};
+    return entity;
 }
 
 void EntityCreator::_entity_files()

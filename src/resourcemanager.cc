@@ -5,6 +5,7 @@
 #include "utils.h"
 
 #include <limits>
+#include <iostream>
 
 using namespace utils::debug;
 
@@ -126,30 +127,68 @@ Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
     glGenBuffers(2, vbo_ids);
     CHECK_ERR();
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_ids[0]);
-    CHECK_ERR();
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_ids[1]);
-    CHECK_ERR();    
-    
-    if ((glIsBuffer(vbo_ids[0]) != GL_TRUE) || (glIsBuffer(vbo_ids[1]) != GL_TRUE)) {
-	return Mesh {
-	    std::numeric_limits<unsigned int>::max(),
-		std::numeric_limits<unsigned int>::max(),
-		std::numeric_limits<unsigned int>::max()
-	};
-    }
-
     std::vector<Vertex3dAttrib> hybrid_data;
     std::size_t vertex_count = mesh_rd->vertices.size() / 3;
 
     for (std::size_t i = 0; i < vertex_count; ++ i) {
-	hybrid_data.emplace_back(Vertex3dAttrib{
-		{mesh_rd->vertices[i * 3], mesh_rd->vertices[i * 3 + 1], mesh_rd->vertices[i * 3 + 2]},
-		    {mesh_rd->texuvcoords[i * 2], mesh_rd->texuvcoords[i * 2 + 1]}
-	    });
+    	hybrid_data.emplace_back(Vertex3dAttrib{
+    		{mesh_rd->vertices[i * 3], mesh_rd->vertices[i * 3 + 1], mesh_rd->vertices[i * 3 + 2]},
+    		    {mesh_rd->texuvcoords[i * 2], mesh_rd->texuvcoords[i * 2 + 1]}
+    	    });
     }
 
+    // for (int i = 0; i <  mesh_rd->texuvcoords.size(); i += 2) {
+    // 	std::cout << mesh_rd->texuvcoords[i] << mesh_rd->texuvcoords[i + 1] << std::endl;
+    // }
+
+
+    // std::cout << "hybrid_data size: " << hybrid_data.size() << std::endl;
+    
+    // for (const Vertex3dAttrib& v : hybrid_data) {
+    // 	std::cout << "{{"
+    // 	     << v.coord3d[0] << ", "
+    // 	     << v.coord3d[1] << ", "
+    // 	     << v.coord3d[2] << "}, {"
+    // 		  << v.uvcoord[0] << ", "
+    // 		  << v.uvcoord[1] << "}}"
+    // 		  << std::endl;
+    // }
+
+    float vertices[] = {
+	-1.0, -1.0,  1.0,
+	1.0, -1.0,  1.0,
+	1.0,  1.0,  1.0,
+	-1.0,  1.0,  1.0,
+	-1.0,  1.0,  1.0,
+	1.0,  1.0,  1.0,
+	1.0,  1.0, -1.0,
+	-1.0,  1.0, -1.0,
+	1.0, -1.0, -1.0,
+	-1.0, -1.0, -1.0,
+	-1.0,  1.0, -1.0,
+	1.0,  1.0, -1.0,
+	-1.0, -1.0, -1.0,
+	1.0, -1.0, -1.0,
+	1.0, -1.0,  1.0,
+	-1.0, -1.0,  1.0,
+	-1.0, -1.0, -1.0,
+	-1.0, -1.0,  1.0,
+	-1.0,  1.0,  1.0,
+	-1.0,  1.0, -1.0,
+	1.0, -1.0,  1.0,
+	1.0, -1.0, -1.0,
+	1.0,  1.0, -1.0,
+	1.0,  1.0,  1.0	
+    };
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_ids[0]);
+    CHECK_ERR();
+    
+    //    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER,
+    // 		 mesh_rd->vertices.size() * sizeof(float),
+    // 		 mesh_rd->vertices.data(),
+    // 		 GL_STATIC_DRAW);
 
     glBufferData(GL_ARRAY_BUFFER,
 		 hybrid_data.size() * sizeof(Vertex3dAttrib),
@@ -157,13 +196,82 @@ Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
 		 GL_STATIC_DRAW);
     CHECK_ERR();
 
+    
+
+    float uvcoords[] = {
+	0.0, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+	0.0, 1.0,
+	0.0, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+	0.0, 1.0,
+	0.0, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+	0.0, 1.0,
+	0.0, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+	0.0, 1.0,
+	0.0, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+	0.0, 1.0,
+	0.0, 0.0,
+	1.0, 0.0,
+	1.0, 1.0,
+	0.0, 1.0,	
+    };
+
+    // glBindBuffer(GL_ARRAY_BUFFER, vbo_ids[1]);
+    // CHECK_ERR();
+    
+    // //    glBufferData(GL_ARRAY_BUFFER, sizeof(uvcoords), uvcoords, GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER,
+    // 		 mesh_rd->texuvcoords.size() * sizeof(float),
+    // 		 mesh_rd->texuvcoords.data(),
+    // 		 GL_STATIC_DRAW);    
+    // CHECK_ERR();
+
+    
+
+    unsigned short indices[] = {
+	0,  1,  2,
+	2,  3,  0,
+	4,  5,  6,
+	6,  7,  4,
+	8,  9, 10,
+	10, 11,  8,
+	12, 13, 14,
+	14, 15, 12,
+	16, 17, 18,
+	18, 19, 16,
+	20, 21, 22,
+	22, 23, 20
+    };
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_ids[1]);
+    CHECK_ERR();    
+    
+    //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		 mesh_rd->indices.size() * sizeof(unsigned int),
-		 mesh_rd->indices.data(),
-		 GL_STATIC_DRAW);
+    		 mesh_rd->indices.size() * sizeof(unsigned short),
+    		 mesh_rd->indices.data(),
+    		 GL_STATIC_DRAW);
     CHECK_ERR();
 
-    return Mesh{vbo_ids[0], vbo_ids[1], static_cast<GLuint>(mesh_rd->indices.size())};
+    if ((glIsBuffer(vbo_ids[0]) != GL_TRUE) || (glIsBuffer(vbo_ids[1]) != GL_TRUE)) {
+	return Mesh {
+	    std::numeric_limits<unsigned int>::max(),
+		std::numeric_limits<unsigned int>::max(),
+		std::numeric_limits<unsigned int>::max()
+	};
+    }    
+
+    return Mesh{vbo_ids[0], vbo_ids[1],  static_cast<GLuint>(mesh_rd->indices.size())};
 }
 
 Texture ResourceManager::_create_texture(const TextureRawDataPtr& tex_rd)
