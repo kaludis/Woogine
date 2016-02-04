@@ -6,6 +6,7 @@
 #include <functional>
 
 #include <cstdio>
+#include <cstdarg>
 
 #include <png.h>
 
@@ -51,6 +52,7 @@ public:
 
 private:
     bool _check_format();
+    void _abort(const char* s, ...);
 
 private:
     std::string _filename;
