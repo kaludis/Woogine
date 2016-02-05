@@ -1,0 +1,57 @@
+set(SOURCE
+   ${SOURCE}
+   ${CMAKE_CURRENT_SOURCE_DIR}/camera.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/core.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/debug.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/entity.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/entitycreator.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/fsresolver.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/imageloader.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/meshdatareader.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/objloader.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/programdatareader.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/resourcemanager.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/scene.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/stringutl.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/texturedatareader.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/window.cc
+   PARENT_SCOPE
+)
+
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/camera.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/core.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/datareaderexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/debug.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/entitycreatorexc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/entitycreator.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/entity.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/entityresources.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/fsresolverexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/fsresolver.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/imageloader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/meshdatareader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/mesh.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/meshrawdata.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/objdata.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/objloader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/programdatareader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/program.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/programrawdata.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/renderer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/resourcemanagerexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/resourcemanager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/scene.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/stringutl.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/texturedatareaderexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/texturedatareader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/texture.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/texturerawdata.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/vertexattribute.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/windowexc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/window.h
+  PARENT_SCOPE
+  )
