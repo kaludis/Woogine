@@ -28,7 +28,7 @@ void Core::_process_events()
 	case SDL_WINDOWEVENT:
 	    switch (ev.window.event) {
 	    case SDL_WINDOWEVENT_SIZE_CHANGED:
-//		on_resize(ev.window.data1, ev.window.data2);
+		_pwindow->resize(ev.window.data1, ev.window.data2);
 		break;
 	    }
 	    break;

@@ -107,10 +107,20 @@ Program ResourceManager::_create_program(const ProgramRawDataPtr& prog_rd)
 	throw ResourceManagerException{"Could not get attribute location for 'texcoord' attribute"};
     }
 
-    new_prog.uniform_mvp = _uniform_location(new_prog.program_id, "mvp");
-    if (new_prog.uniform_mvp == -1) {
-	throw ResourceManagerException{"Could not get uniform location for 'mvp' uniform"};
+    new_prog.uniform_projection = _uniform_location(new_prog.program_id, "projection");
+    if (new_prog.uniform_projection == -1) {
+	throw ResourceManagerException{"Could not get uniform location for 'projection' uniform"};
     }
+
+    new_prog.uniform_view = _uniform_location(new_prog.program_id, "view");
+    if (new_prog.uniform_view == -1) {
+	throw ResourceManagerException{"Could not get uniform location for 'view' uniform"};
+    }
+
+    new_prog.uniform_model = _uniform_location(new_prog.program_id, "model");
+    if (new_prog.uniform_model == -1) {
+	throw ResourceManagerException{"Could not get uniform location for 'model' uniform"};
+    }    
 
     new_prog.uniform_sampler2d = _uniform_location(new_prog.program_id, "sampler2d");    
     if (new_prog.uniform_sampler2d == -1) {

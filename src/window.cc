@@ -9,8 +9,8 @@
 Window::Window()
     : _pwindow{nullptr, SDL_DestroyWindow},
     _poglctx{nullptr, [](SDL_GLContext){}},
-    _screen_width{1024},
-    _screen_height{768}
+    _width{800},
+    _height{600}
 {
     _init();
 }
@@ -20,7 +20,7 @@ void Window::_init()
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window* window = SDL_CreateWindow("3D Real-Time Rendering",
 					  SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-					  _screen_width, _screen_height,
+					  _width, _height,
 					  SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
     CtxWrapper* ctxwrap = new CtxWrapper;    
@@ -53,4 +53,12 @@ void Window::_init()
 void Window::swap_window()
 {
     SDL_GL_SwapWindow(_pwindow.get());
+}
+
+void Window::resize(int width, int height)
+{
+    _width = width;
+    _height = height;
+
+    glViewport(0, 0, _width, _height);
 }

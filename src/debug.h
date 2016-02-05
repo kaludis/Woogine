@@ -40,3 +40,6 @@ namespace utils
 #endif // DEBUG
 
 #define UNUSED(arg) (void)(arg)
+
+#define BUFFER_OFFSET(idx)	\
+	(static_cast<char*>(0) + idx)

@@ -42,7 +42,7 @@ ImageLoader::read_data(const std::string& filename)
 	    png_read_update_info(png_ptr, info_ptr);
 
 	    unsigned char** raw_data = new unsigned char*[png_data.height];
-	    for (int i = 0; i < png_data.height; ++i) {
+	    for (unsigned int i = 0; i < png_data.height; ++i) {
 		raw_data[i] = new unsigned char[png_data.stride];
 	    }
 
@@ -51,8 +51,8 @@ ImageLoader::read_data(const std::string& filename)
 	    ImageDataArray data_array(png_data.height * png_data.stride);
 
 	    //	    unsigned int k{0};
-	    for (int i = 0; i < png_data.height; ++i) {
-		for (int j = 0; j < png_data.stride; ++j) {
+	    for (unsigned int i = 0; i < png_data.height; ++i) {
+		for (unsigned int j = 0; j < png_data.stride; ++j) {
 		    data_array[i * png_data.stride + j] = raw_data[i][j];
 		    // DEBUG_PRINT("flat index: [%d]\t 2dim index: [%d][%d]\n",
 		    // 		i * data.stride + j,
@@ -60,22 +60,13 @@ ImageLoader::read_data(const std::string& filename)
 		}
 	    }
 
-	    DEBUG_MSG("First stride\n");
-	    for (int i = 0; i < 20; ++i) {
-	    	fprintf(stdout, "0x%1x ", static_cast<unsigned>(raw_data[0][i]));
-	    }
-
-	    fprintf(stdout, "\n");
-
 	    png_data.data = data_array;
 
-	    for (int i = 0; i < png_data.height; ++i) {
+	    for (unsigned int i = 0; i < png_data.height; ++i) {
 		delete[] raw_data[i];
 	    }
 	    
 	    delete[] raw_data;
-
-	    DEBUG_PRINT("PNG file size %d\n", data_array.size());
 	}
     }
 
@@ -105,12 +96,12 @@ bool ImageLoader::write_data(const std::string& filename, const ImageData& imgda
     png_write_info(png_ptr, info_ptr);
 
     unsigned char** raw_data = new unsigned char*[imgdata.height];
-    for (int i = 0; i < imgdata.height; ++i) {
+    for (unsigned int i = 0; i < imgdata.height; ++i) {
 	raw_data[i] = new unsigned char[imgdata.stride];
     }
 
-    for (int i = 0; i < imgdata.height; ++i) {
-	for (int j = 0; j < imgdata.stride; ++j) {
+    for (unsigned int i = 0; i < imgdata.height; ++i) {
+	for (unsigned int j = 0; j < imgdata.stride; ++j) {
 	    raw_data[i][j] = imgdata.data[i * imgdata.stride + j];
 	}
     }    
@@ -128,12 +119,12 @@ bool ImageLoader::write_data(const std::string& filename, const ImageData& imgda
     png_write_end(png_ptr, nullptr);
 
     fprintf(stdout, "First stride\n");
-    for (int i = 0; i < 20; ++i) {
+    for (unsigned int i = 0; i < 20; ++i) {
     	fprintf(stdout, "0x%1x ", static_cast<unsigned int>(imgdata.data[i]));
     }
     fprintf(stdout, "\n");
 
-    for (int i = 0; i < imgdata.height; ++i) {
+    for (unsigned int i = 0; i < imgdata.height; ++i) {
 	delete[] raw_data[i];
     }    
 

@@ -46,6 +46,7 @@ inline
 void Core::set_renderer(RendererPtr&& renderer)
 {
     _prenderer.swap(renderer);
+    _prenderer->set_window(_pwindow.get());
 }
 
 inline

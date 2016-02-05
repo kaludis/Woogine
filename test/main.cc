@@ -26,7 +26,9 @@ void print_entity(const EntityPtr& pentity)
     cout << "program: " << res.program.program_id << endl
 	 << "attrib_coord3d: " << res.program.attrib_coord3d << endl
 	 << "attrib_texcoord: " << res.program.attrib_texcoord << endl
-	 << "uniform_mvp: " << res.program.uniform_mvp << endl
+	 << "uniform_projection: " << res.program.uniform_projection << endl
+	 << "uniform_view: " << res.program.uniform_view << endl
+	 << "uniform_model: " << res.program.uniform_model << endl	
 	 << "uniform_sampler3d: " << res.program.uniform_sampler2d << endl
 	 << "buffer: " << res.mesh.buffer_id << endl
 	 << "index_buffer: " << res.mesh.indexbuffer_id << endl
@@ -49,7 +51,7 @@ int main()
 
 	ScenePtr scene{new Scene{}};
 
-	scene->add_entity(ecreator.create_entity("cube"));
+	scene->add_entity(ecreator.create_entity("quad"));
 
 	while (core.is_running()) {
 	    core.run_scene(scene);

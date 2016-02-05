@@ -15,40 +15,28 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define BUFFER_OFFSET(idx)	\
-	(static_cast<char*>(0) + idx)
-
-constexpr int screen_width = 1024;
-constexpr int screen_height = 768;
-
 void Renderer::render_scene(const ScenePtr& scene, const CameraPtr& camera)
 {
     _reset_state();
 
     for (const Entity& entity : *(scene->entity_list())) {
-	glm::mat4 mvp = camera->projection_matrix() *
-	    camera->view_matrix() *
-	    entity.model_matrix();
-	_render_entity(entity, mvp);
+	const EntityResources& res = entity.resources();
+
+	_use_program(res.program.program_id);
+
+	_pass_viewprojection(res, _projection_matrix(), camera->view_matrix());	
+	
+	_render_entity(res, entity.model_matrix());
     }
 }    
     
-void Renderer::_render_entity(const Entity& entity, const glm::mat4& mvp)
+void Renderer::_render_entity(const EntityResources& res, const glm::mat4& model)
 {
-    int size;
-    
-    const EntityResources& res = entity.resources();
-    
-    if (_program != res.program.program_id) {
-	_program = res.program.program_id;
-	glUseProgram(_program);
-    }
-
     glUniformMatrix4fv(
-		       res.program.uniform_mvp,
+		       res.program.uniform_model,
 		       1,
 		       GL_FALSE,
-		       glm::value_ptr(mvp)
+		       glm::value_ptr(model)
 		       );
 
     glActiveTexture(GL_TEXTURE0);
@@ -99,4 +87,45 @@ void Renderer::_reset_state()
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);    
+}
+
+glm::mat4 Renderer::_projection_matrix() const
+{
+    Window::WindowSize wsize{800, 600};
+
+    if (_pwindow) {
+	wsize = _pwindow->size();
+    }
+
+    float aspect_ratio = wsize.width / wsize.height;
+
+    return glm::ortho(-1 * aspect_ratio, aspect_ratio,
+		      -1.0f, 1.0f, -1.0f, 1.0f);
+}
+
+void Renderer::_use_program(GLuint program)
+{
+    if (_program != program) {
+	_program = program;
+	glUseProgram(_program);	
+    }
+}
+
+void Renderer::_pass_viewprojection(const EntityResources& res,
+				    const glm::mat4& projection,
+				    const glm::mat4& view)
+{
+    glUniformMatrix4fv(
+		       res.program.uniform_projection,
+		       1,
+		       GL_FALSE,
+		       glm::value_ptr(projection)
+		       );
+
+    glUniformMatrix4fv(
+		       res.program.uniform_view,
+		       1,
+		       GL_FALSE,
+		       glm::value_ptr(view)
+		       );
 }
