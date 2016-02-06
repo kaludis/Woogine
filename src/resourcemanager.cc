@@ -1,11 +1,12 @@
 #include "resourcemanager.h"
 #include "resourcemanagerexception.h"
-#include "vertexattribute.h"
+#include "vertexattributes.h"
 
 #include "utils.h"
+#include "debug.h"
 
 #include <limits>
-#include <iostream>
+#include <algorithm>
 
 using namespace utils::debug;
 
@@ -68,7 +69,7 @@ Texture ResourceManager::entity_texture(const std::string& texture_name)
 	
 	TextureRawDataPtr tex_rd = _ptexdatareader->read_texture_data(texture_name);
 	
-	Texture new_tex = _create_texture(tex_rd);
+	Texture new_tex = _create_texture(*tex_rd);
 	
 	unsigned int max = std::numeric_limits<unsigned int>::max();
 	
@@ -78,6 +79,26 @@ Texture ResourceManager::entity_texture(const std::string& texture_name)
     
 	_texture_map[texture_name] = new_tex;
 	return new_tex;
+    } else {
+	return it->second;
+    }
+}
+
+Sprite ResourceManager::entity_sprite(const std::string& sprite_name)
+{
+    auto it = _sprite_map.find(sprite_name);
+    if (it == _sprite_map.end()) {
+
+	SpriteRawDataPtr sprite_rd = _pspritedatareader->read_sprite_data(sprite_name);
+	Texture new_tex = _create_texture(sprite_rd->texture_data);
+	// TODO: Handling errors
+
+	SpritePtr sprite = _create_sprite(*sprite_rd);
+	sprite->_texture_id = new_tex.tex_id;
+
+	_sprite_map[sprite_name] = *sprite;
+
+	return *sprite;
     } else {
 	return it->second;
     }
@@ -132,148 +153,69 @@ Program ResourceManager::_create_program(const ProgramRawDataPtr& prog_rd)
 
 Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
 {
-    GLuint vbo_ids[2];
+    GLuint vbo_ids[3];
 
-    glGenBuffers(2, vbo_ids);
+    glGenBuffers(3, vbo_ids);
     CHECK_ERR();
 
-    std::vector<Vertex3dAttrib> hybrid_data;
+    //    std::vector<Vertex3dAttrib> hybrid_data;
     std::size_t vertex_count = mesh_rd->vertices.size() / 3;
 
-    for (std::size_t i = 0; i < vertex_count; ++ i) {
-    	hybrid_data.emplace_back(Vertex3dAttrib{
-    		{mesh_rd->vertices[i * 3], mesh_rd->vertices[i * 3 + 1], mesh_rd->vertices[i * 3 + 2]},
-    		    {mesh_rd->texuvcoords[i * 2], mesh_rd->texuvcoords[i * 2 + 1]}
-    	    });
+    // for (std::size_t i = 0; i < vertex_count; ++ i) {
+    // 	hybrid_data.emplace_back(Vertex3dAttrib{
+    // 		{mesh_rd->vertices[i * 3], mesh_rd->vertices[i * 3 + 1], mesh_rd->vertices[i * 3 + 2]},
+    // 		    {mesh_rd->texuvcoords[i * 2], mesh_rd->texuvcoords[i * 2 + 1]}
+    // 	    });
+    // }
+
+    std::vector<Vertex3dAttrib> packed_va;
+    for (std::size_t i = 0; i < vertex_count; ++i) {
+	packed_va.emplace_back(Vertex3dAttrib{
+		mesh_rd->vertices[i * 3],
+		    mesh_rd->vertices[i * 3 + 1],
+		    mesh_rd->vertices[i * 3 + 2]});
     }
 
-    // for (int i = 0; i <  mesh_rd->texuvcoords.size(); i += 2) {
-    // 	std::cout << mesh_rd->texuvcoords[i] << mesh_rd->texuvcoords[i + 1] << std::endl;
-    // }
+    std::size_t uvtex_count = mesh_rd->texuvcoords.size() / 2;
+    std::vector<UVCoords> packed_tex;
+    for (std::size_t i = 0; i < uvtex_count; ++i) {
+	packed_tex.emplace_back(UVCoords{
+		mesh_rd->texuvcoords[i * 2],
+		    mesh_rd->texuvcoords[i * 2 + 1]});
+    }
 
-
-    // std::cout << "hybrid_data size: " << hybrid_data.size() << std::endl;
-    
-    // for (const Vertex3dAttrib& v : hybrid_data) {
-    // 	std::cout << "{{"
-    // 	     << v.coord3d[0] << ", "
-    // 	     << v.coord3d[1] << ", "
-    // 	     << v.coord3d[2] << "}, {"
-    // 		  << v.uvcoord[0] << ", "
-    // 		  << v.uvcoord[1] << "}}"
-    // 		  << std::endl;
-    // }
-
-    float vertices[] = {
-	-1.0, -1.0,  1.0,
-	1.0, -1.0,  1.0,
-	1.0,  1.0,  1.0,
-	-1.0,  1.0,  1.0,
-	-1.0,  1.0,  1.0,
-	1.0,  1.0,  1.0,
-	1.0,  1.0, -1.0,
-	-1.0,  1.0, -1.0,
-	1.0, -1.0, -1.0,
-	-1.0, -1.0, -1.0,
-	-1.0,  1.0, -1.0,
-	1.0,  1.0, -1.0,
-	-1.0, -1.0, -1.0,
-	1.0, -1.0, -1.0,
-	1.0, -1.0,  1.0,
-	-1.0, -1.0,  1.0,
-	-1.0, -1.0, -1.0,
-	-1.0, -1.0,  1.0,
-	-1.0,  1.0,  1.0,
-	-1.0,  1.0, -1.0,
-	1.0, -1.0,  1.0,
-	1.0, -1.0, -1.0,
-	1.0,  1.0, -1.0,
-	1.0,  1.0,  1.0	
-    };
-    
     glBindBuffer(GL_ARRAY_BUFFER, vbo_ids[0]);
     CHECK_ERR();
     
-    //    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // glBufferData(GL_ARRAY_BUFFER,
-    // 		 mesh_rd->vertices.size() * sizeof(float),
-    // 		 mesh_rd->vertices.data(),
-    // 		 GL_STATIC_DRAW);
-
     glBufferData(GL_ARRAY_BUFFER,
-		 hybrid_data.size() * sizeof(Vertex3dAttrib),
-		 hybrid_data.data(),
+		 // hybrid_data.size() * sizeof(Vertex3dAttrib),
+		 //hybrid_data.data(),
+		 packed_va.size() * sizeof(Vertex3dAttrib),
+		 packed_va.data(),
 		 GL_STATIC_DRAW);
     CHECK_ERR();
 
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_ids[1]);
+    CHECK_ERR();
     
+    glBufferData(GL_ARRAY_BUFFER,
+		 packed_tex.size() * sizeof(UVCoords),
+		 packed_tex.data(),
+		 GL_STATIC_DRAW);
+    CHECK_ERR();    
 
-    float uvcoords[] = {
-	0.0, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-	0.0, 1.0,
-	0.0, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-	0.0, 1.0,
-	0.0, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-	0.0, 1.0,
-	0.0, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-	0.0, 1.0,
-	0.0, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-	0.0, 1.0,
-	0.0, 0.0,
-	1.0, 0.0,
-	1.0, 1.0,
-	0.0, 1.0,	
-    };
-
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo_ids[1]);
-    // CHECK_ERR();
-    
-    // //    glBufferData(GL_ARRAY_BUFFER, sizeof(uvcoords), uvcoords, GL_STATIC_DRAW);
-    // glBufferData(GL_ARRAY_BUFFER,
-    // 		 mesh_rd->texuvcoords.size() * sizeof(float),
-    // 		 mesh_rd->texuvcoords.data(),
-    // 		 GL_STATIC_DRAW);    
-    // CHECK_ERR();
-
-    
-
-    unsigned short indices[] = {
-	0,  1,  2,
-	2,  3,  0,
-	4,  5,  6,
-	6,  7,  4,
-	8,  9, 10,
-	10, 11,  8,
-	12, 13, 14,
-	14, 15, 12,
-	16, 17, 18,
-	18, 19, 16,
-	20, 21, 22,
-	22, 23, 20
-    };
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_ids[1]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_ids[2]);
     CHECK_ERR();    
     
-    //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
     		 mesh_rd->indices.size() * sizeof(unsigned short),
     		 mesh_rd->indices.data(),
     		 GL_STATIC_DRAW);
     CHECK_ERR();
 
-    if ((glIsBuffer(vbo_ids[0]) != GL_TRUE) || (glIsBuffer(vbo_ids[1]) != GL_TRUE)) {
+    if ((glIsBuffer(vbo_ids[0]) != GL_TRUE)
+	|| (glIsBuffer(vbo_ids[1]) != GL_TRUE)
+	|| (glIsBuffer(vbo_ids[2]) != GL_TRUE)) {
 	return Mesh {
 	    std::numeric_limits<unsigned int>::max(),
 		std::numeric_limits<unsigned int>::max(),
@@ -281,10 +223,10 @@ Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
 	};
     }    
 
-    return Mesh{vbo_ids[0], vbo_ids[1],  static_cast<GLuint>(mesh_rd->indices.size())};
+    return Mesh{vbo_ids[0], vbo_ids[1], vbo_ids[2],  static_cast<GLuint>(mesh_rd->indices.size())};
 }
 
-Texture ResourceManager::_create_texture(const TextureRawDataPtr& tex_rd)
+Texture ResourceManager::_create_texture(const TextureRawData& tex_rd)
 {
     GLuint tex_id{0};
     
@@ -305,16 +247,94 @@ Texture ResourceManager::_create_texture(const TextureRawDataPtr& tex_rd)
 		 GL_TEXTURE_2D,
 		 0,
 		 GL_RGBA,
-		 tex_rd->width,
-		 tex_rd->height,
+		 tex_rd.width,
+		 tex_rd.height,
 		 0,
 		 GL_RGBA,
 		 GL_UNSIGNED_BYTE,
-		 tex_rd->data.data()
+		 tex_rd.data.data()
 		 );
     CHECK_ERR();
 
     return Texture{tex_id};
+}
+
+SpritePtr ResourceManager::_create_sprite(const SpriteRawData& sprite_rd)
+{
+    GLuint vbo_id;
+
+    glGenBuffers(1, &vbo_id);
+    CHECK_ERR();
+
+    SpritePtr sprite{new Sprite};
+
+    unsigned int rows = sprite_rd.sprites_rows;
+    unsigned int cols = sprite_rd.sprites_stride;
+    unsigned int count = sprite_rd.sprites_count;
+
+    float step_xuv = 1.0f / cols;
+    float step_yuv = 1.0f / rows;
+
+    DEBUG_PRINT("step_xuv : %f, step_yuv: %f\n", step_xuv, step_yuv);
+
+    /*
+      3 (0, 1) ----------(1, 1) 2
+           |                |
+	   |                |
+	   |                |
+  	   |                |
+      0 (0, 0)-----------(1, 0) 1
+     */
+
+    Sprite::QuadUV quaduv;
+    quaduv.bottom_left.uvcoord[0] = -step_xuv;
+    quaduv.bottom_left.uvcoord[1] = 1.0f;
+    quaduv.bottom_right.uvcoord[0] = 0.0f;
+    quaduv.bottom_right.uvcoord[1] = 1.0f;
+    quaduv.top_right.uvcoord[0] = 0.0f;
+    quaduv.top_right.uvcoord[1] = 1.0f + step_yuv;
+    quaduv.top_left.uvcoord[0] = -step_xuv;
+    quaduv.top_left.uvcoord[1] = 1.0f + step_yuv;
+
+    for (unsigned int i = 0; i < rows; ++i) {
+	quaduv.bottom_left.uvcoord[1] -= step_yuv;
+	quaduv.bottom_right.uvcoord[1] -= step_yuv;
+	quaduv.top_right.uvcoord[1] -= step_yuv;
+	quaduv.top_left.uvcoord[1] -= step_yuv;
+	
+	for (unsigned int j = 0; j < cols; ++j) {
+	    quaduv.bottom_left.uvcoord[0] += step_xuv;
+	    quaduv.bottom_right.uvcoord[0] += step_xuv;
+	    quaduv.top_right.uvcoord[0] += step_xuv;
+	    quaduv.top_left.uvcoord[0] += step_xuv;
+	    
+	    sprite->_quaduvlist.push_back(quaduv);
+	    
+	    if (!--count) i = rows;
+	}
+
+	quaduv.bottom_left.uvcoord[0] = -step_xuv;
+	quaduv.bottom_right.uvcoord[0] = 0.0f;
+	quaduv.top_right.uvcoord[0] = 0.0f;
+	quaduv.top_left.uvcoord[0] = -step_xuv;
+    }
+
+    //    std::reverse(sprite->_quaduvlist.begin(), sprite->_quaduvlist.end());
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
+    if (glIsBuffer(vbo_id) != GL_TRUE) {
+	return SpritePtr{nullptr};
+    }
+
+    glBufferData(GL_ARRAY_BUFFER,
+		 sizeof(Sprite::QuadUV),
+		 &sprite->_quaduvlist[0],
+		 GL_DYNAMIC_DRAW);
+    CHECK_ERR();
+
+    sprite->_buffer_id = vbo_id;
+
+    return sprite;
 }
 
 GLuint ResourceManager::_create_shader(const std::string& shader_source, GLenum type)
@@ -450,7 +470,12 @@ void ResourceManager::_release_resources()
 	    if (glIsBuffer(pair.second.indexbuffer_id) == GL_TRUE) {
 		glDeleteBuffers(1, &pair.second.indexbuffer_id);
 		CHECK_ERR();
-	    }	    
+	    }
+
+	    if (glIsBuffer(pair.second.texbuffer_id == GL_TRUE)) {
+		glDeleteBuffers(1, &pair.second.texbuffer_id);
+		CHECK_ERR();
+	    }	    	    
 	}
     }
 

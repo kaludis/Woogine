@@ -1,0 +1,6 @@
+file ../textures/explosion17.png
+swidth 64
+sheight 64
+scount 25
+sstride 5
+srows 5

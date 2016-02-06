@@ -2,6 +2,7 @@
 
 #include "scene.h"
 #include "entity.h"
+#include "sprite.h"
 #include "camera.h"
 #include "window.h"
 
@@ -21,20 +22,21 @@ public:
 private:
     void _reset_state();
 
-    void _render_entity(const EntityResources& res, const glm::mat4& model);
+    void _render_entity(const Entity& entity);
+
+    void _render_sprite(const Sprite& sprite);
 
     glm::mat4 _projection_matrix() const;
 
-    void _use_program(GLuint program);
+    void _use_program(const Program& program);
 
-    void _pass_viewprojection(const EntityResources& res,
-			      const glm::mat4& projection,
+    void _pass_viewprojection(const glm::mat4& projection,
 			      const glm::mat4& view);
 
 private:
     Window* _pwindow;
     // current OGL state
-    GLuint _program;
+    Program _program;
     GLuint _buffer;
     GLuint _indexbuffer;
     GLuint _index_count;

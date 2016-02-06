@@ -5,10 +5,12 @@
 #include "program.h"
 #include "mesh.h"
 #include "texture.h"
+#include "sprite.h"
 
 #include "programdatareader.h"
 #include "meshdatareader.h"
 #include "texturedatareader.h"
+#include "spritedatareader.h"
 
 #include "fsresolver.h"
 
@@ -23,17 +25,20 @@ private:
     using ProgramMap = std::map<std::string, Program>;
     using MeshMap = std::map<std::string, Mesh>;
     using TextureMap = std::map<std::string, Texture>;
+    using SpriteMap = std::map<std::string, Sprite>;
 
     using ProgramDataReaderPtr = std::unique_ptr<ProgramDataReader>;
     using MeshDataReaderPtr = std::unique_ptr<MeshDataReader>;
     using TextureDataReaderPtr = std::unique_ptr<TextureDataReader>;
-    using FSResolverPtr = std::unique_ptr<FSResolver>;
+    using SpriteDataReaderPtr = std::unique_ptr<SpriteDataReader>;
+    //    using FSResolverPtr = std::unique_ptr<FSResolver>;
 
 public:
     ResourceManager()
 	: _pprogdatareader{new ProgramDataReader{}},
 	_pmeshdatareader{new MeshDataReader{}},
-	_ptexdatareader{new TextureDataReader{}}
+	  _ptexdatareader{new TextureDataReader{}},
+	  _pspritedatareader{new SpriteDataReader{}}
     {}
 
     ~ResourceManager();
@@ -45,6 +50,8 @@ public:
 
     Texture entity_texture(const std::string& texture_name);
 
+    Sprite entity_sprite(const std::string& sprite_name);
+
 private:
     Program _create_program(const ProgramRawDataPtr& prog_rd);
 
@@ -54,7 +61,9 @@ private:
 
     Mesh _create_mesh(const MeshRawDataPtr& mesh_rd);
 
-    Texture _create_texture(const TextureRawDataPtr& tex_rd);
+    Texture _create_texture(const TextureRawData& tex_rd);
+
+    SpritePtr _create_sprite(const SpriteRawData& sprite_rd);
 
     GLuint _create_shader(const std::string& shader_source, GLenum type);
 
@@ -68,8 +77,10 @@ private:
     ProgramDataReaderPtr _pprogdatareader;
     MeshDataReaderPtr _pmeshdatareader;
     TextureDataReaderPtr _ptexdatareader;
+    SpriteDataReaderPtr _pspritedatareader;
     
     ProgramMap _program_map;
     MeshMap _mesh_map;
     TextureMap _texture_map;
+    SpriteMap _sprite_map;
 };

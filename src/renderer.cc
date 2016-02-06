@@ -3,7 +3,7 @@
 #include "program.h"
 #include "mesh.h"
 #include "texture.h"
-#include "vertexattribute.h"
+#include "vertexattributes.h"
 #include "debug.h"
 
 #include <cstddef>
@@ -20,28 +20,38 @@ void Renderer::render_scene(const ScenePtr& scene, const CameraPtr& camera)
     _reset_state();
 
     for (const Entity& entity : *(scene->entity_list())) {
-	const EntityResources& res = entity.resources();
-
-	_use_program(res.program.program_id);
-
-	_pass_viewprojection(res, _projection_matrix(), camera->view_matrix());	
-	
-	_render_entity(res, entity.model_matrix());
+	_use_program(entity.resources().program);	
+	_pass_viewprojection(_projection_matrix(), camera->view_matrix());
+	_render_entity(entity);
     }
 }    
     
-void Renderer::_render_entity(const EntityResources& res, const glm::mat4& model)
+void Renderer::_render_entity(const Entity& entity)
 {
+    const EntityResources& res = entity.resources();
+
     glUniformMatrix4fv(
 		       res.program.uniform_model,
 		       1,
 		       GL_FALSE,
-		       glm::value_ptr(model)
+		       glm::value_ptr(entity.model_matrix())
 		       );
 
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(res.program.uniform_sampler2d, 0);
-    glBindTexture(GL_TEXTURE_2D, res.texture.tex_id);
+    _render_sprite(res.sprite);
+    // glActiveTexture(GL_TEXTURE0);
+    // glUniform1i(res.program.uniform_sampler2d, 0);
+    // glBindTexture(GL_TEXTURE_2D, res.texture.tex_id);
+
+    // glBindBuffer(GL_ARRAY_BUFFER, res.mesh.texbuffer_id);
+    // glEnableVertexAttribArray(res.program.attrib_texcoord);
+    // glVertexAttribPointer(
+    // 			  res.program.attrib_texcoord,
+    // 			  2,
+    // 			  GL_FLOAT,
+    // 			  GL_FALSE,
+    // 			  sizeof(UVCoords),
+    // 			  BUFFER_OFFSET(offsetof(UVCoords, uvcoord))
+    // 			  );    
 
     glBindBuffer(GL_ARRAY_BUFFER, res.mesh.buffer_id);    
     glEnableVertexAttribArray(res.program.attrib_coord3d);
@@ -54,23 +64,12 @@ void Renderer::_render_entity(const EntityResources& res, const glm::mat4& model
 			  BUFFER_OFFSET(offsetof(Vertex3dAttrib, coord3d))
 			  );
 
-    //    glBindBuffer(GL_ARRAY_BUFFER, res.mesh.texbuffer_id);
-    glEnableVertexAttribArray(res.program.attrib_texcoord);
-    glVertexAttribPointer(
-			  res.program.attrib_texcoord,
-			  2,
-			  GL_FLOAT,
-			  GL_FALSE,
-			  sizeof(Vertex3dAttrib),
-			  BUFFER_OFFSET(offsetof(Vertex3dAttrib, uvcoord))
-			  );
-
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, res.mesh.indexbuffer_id);
     
     glDrawElements(GL_TRIANGLES, res.mesh.index_count, GL_UNSIGNED_SHORT, 0);
 
+    glDisableVertexAttribArray(res.program.attrib_texcoord);    
     glDisableVertexAttribArray(res.program.attrib_coord3d);
-    glDisableVertexAttribArray(res.program.attrib_texcoord);
 
     CHECK_ERR();    
 }
@@ -79,7 +78,7 @@ void Renderer::_reset_state()
 {
     using namespace std;
     
-    _program = numeric_limits<unsigned int>::max();
+    _program.program_id = numeric_limits<unsigned int>::max();
     _buffer = numeric_limits<unsigned int>::max();
     _indexbuffer = numeric_limits<unsigned int>::max();
     _index_count = numeric_limits<unsigned int>::max();
@@ -103,29 +102,53 @@ glm::mat4 Renderer::_projection_matrix() const
 		      -1.0f, 1.0f, -1.0f, 1.0f);
 }
 
-void Renderer::_use_program(GLuint program)
+void Renderer::_use_program(const Program& program)
 {
-    if (_program != program) {
+    if (_program.program_id != program.program_id) {
 	_program = program;
-	glUseProgram(_program);	
+	glUseProgram(_program.program_id);	
     }
 }
 
-void Renderer::_pass_viewprojection(const EntityResources& res,
-				    const glm::mat4& projection,
+void Renderer::_pass_viewprojection(const glm::mat4& projection,
 				    const glm::mat4& view)
 {
     glUniformMatrix4fv(
-		       res.program.uniform_projection,
+		       _program.uniform_projection,
 		       1,
 		       GL_FALSE,
 		       glm::value_ptr(projection)
 		       );
 
     glUniformMatrix4fv(
-		       res.program.uniform_view,
+		       _program.uniform_view,
 		       1,
 		       GL_FALSE,
 		       glm::value_ptr(view)
 		       );
+}
+
+void Renderer::_render_sprite(const Sprite& sprite)
+{
+    Sprite::QuadUV quaduv = sprite.quaduv();
+
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(_program.uniform_sampler2d, 0);
+    glBindTexture(GL_TEXTURE_2D, sprite.texture_id());
+
+    glBindBuffer(GL_ARRAY_BUFFER, sprite.buffer_id());
+    glBufferData(GL_ARRAY_BUFFER,
+		 sizeof(Sprite::QuadUV),
+		 &quaduv,
+		 GL_DYNAMIC_DRAW);
+    
+    glEnableVertexAttribArray(_program.attrib_texcoord);
+    glVertexAttribPointer(
+			  _program.attrib_texcoord,
+			  2,
+			  GL_FLOAT,
+			  GL_FALSE,
+			  sizeof(UVCoords),
+			  BUFFER_OFFSET(offsetof(UVCoords, uvcoord))
+			  );        
 }

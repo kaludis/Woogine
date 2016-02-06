@@ -2,6 +2,9 @@
 #include "entitycreatorexc.h"
 #include "utils.h"
 
+#include "sprite.h"
+#include "debug.h"
+
 #include <fstream>
 
 Entity
@@ -20,6 +23,7 @@ EntityCreator::create_entity(const std::string& entity_name)
     entity._res.program = _presman->entity_program(_vs_file, _fs_file);
     entity._res.mesh = _presman->entity_mesh(_mesh_data_file);
     entity._res.texture = _presman->entity_texture(_texture_file);
+    entity._res.sprite = _presman->entity_sprite("../data/explosion17.dat");
     entity._name = _entity_name;
 
     return entity;

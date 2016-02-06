@@ -1,0 +1,6 @@
+file ../textures/qnumbers.png
+swidth 80
+sheight 80
+scount 20
+sstride 5
+srows 4

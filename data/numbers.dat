@@ -1,0 +1,6 @@
+file ../textures/numbers.png
+swidth 80
+sheight 80
+scount 10
+sstride 5
+srows 2

@@ -4,8 +4,6 @@
 
 #include <cstring>
 
-#include <SDL2/SDL_image.h>
-
 TextureRawDataPtr
 TextureDataReader::read_texture_data(const std::string& filename)
 {

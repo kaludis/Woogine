@@ -16,6 +16,8 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/stringutl.cc
    ${CMAKE_CURRENT_SOURCE_DIR}/texturedatareader.cc
    ${CMAKE_CURRENT_SOURCE_DIR}/window.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/spritedatareader.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/sprite.cc
    PARENT_SCOPE
 )
 
@@ -50,8 +52,11 @@ set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/texture.h
   ${CMAKE_CURRENT_SOURCE_DIR}/texturerawdata.h
   ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/vertexattribute.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/vertexattributes.h
   ${CMAKE_CURRENT_SOURCE_DIR}/windowexc.h
   ${CMAKE_CURRENT_SOURCE_DIR}/window.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/spritedatareader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/sprite.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/spriterawdata.h
   PARENT_SCOPE
   )
