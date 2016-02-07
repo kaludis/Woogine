@@ -17,7 +17,7 @@ public:
 
     Entity create_entity(const std::string& entity_name);
 
-    void set_entity_file(const std::string& entity_file);
+    void set_entities_file(const std::string& entity_file);
 
 private:
     void _entity_files();
@@ -35,7 +35,7 @@ private:
 };
 
 inline
-void EntityCreator::set_entity_file(const std::string& entity_file)
+void EntityCreator::set_entities_file(const std::string& entity_file)
 {
     _entity_file = entity_file;
 }

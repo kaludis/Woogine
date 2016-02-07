@@ -21,19 +21,29 @@ namespace utils
 	do { fprintf(stdout, "%s:%d:%s(): " fmt, __FILE__, \
 			__LINE__, __func__); } while (0)
 
+#define DEBUG_MSGWARN(fmt, ...)	\
+	do { fprintf(stdout, "[WARNING]%s:%d:%s(): " fmt, __FILE__, \
+			__LINE__, __func__); } while (0)
+
+#define DEBUG_MSGERR(fmt, ...)	\
+	do { fprintf(stdout, "[ERROR]%s:%d:%s(): " fmt, __FILE__, \
+			__LINE__, __func__); } while (0)
+
 #define DEBUG_PRINT(fmt, ...)	\
 	do { fprintf(stdout, "%s:%d:%s(): " fmt, __FILE__, \
 			__LINE__, __func__, __VA_ARGS__); } while (0)
 
 #define DEBUG_PRINT_WARN(fmt, ...)	\
-	do { fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, \
+	do { fprintf(stderr, "[WARNING]%s:%d:%s(): " fmt, __FILE__, \
 			__LINE__, __func__, __VA_ARGS__); } while (0)
 
 #define DEBUG_PRINT_ERR(fmt, ...)	\
-	do { fprintf(stderr, "%s:%d:%s(): " fmt, __FILE__, \
+	do { fprintf(stderr, "[ERROR]%s:%d:%s(): " fmt, __FILE__, \
 			__LINE__, __func__, __VA_ARGS__); } while (0)
 #else
-#define DEBUG_MSG(fmt, ...)	
+#define DEBUG_MSG(fmt, ...)
+#define DEBUG_MSGWARN(fmt, ...)
+#define DEBUG_MSGERR(fmt, ...)	
 #define DEBUG_PRINT(fmt, ...)
 #define DEBUG_PRINT_WARN(fmt, ...)
 #define DEBUG_PRINT_ERR(fmt, ...)

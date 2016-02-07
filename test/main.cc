@@ -47,7 +47,7 @@ int main()
 	core.set_camera(CameraPtr{new Camera{}});
 	
 	EntityCreator ecreator{};
-	ecreator.set_entity_file("../data/entities.data");
+	ecreator.set_entities_file("../data/entities.data");
 
 	ScenePtr scene{new Scene{}};
 
