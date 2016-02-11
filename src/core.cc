@@ -6,6 +6,8 @@ constexpr unsigned int msec_per_sec = 1000000;
 
 void Core::run_scene(ScenePtr& scene)
 {
+    ++_fps;
+    
     float dt = _time_elapsed();
 
     _process_events();
@@ -15,6 +17,18 @@ void Core::run_scene(ScenePtr& scene)
     _prenderer->render_scene(scene, _pcamera);
 
     _pwindow->swap_window();
+
+    std::chrono::system_clock::time_point end =
+	std::chrono::system_clock::now();
+
+    if (std::chrono::duration_cast<std::chrono::microseconds>(end - _start)
+	.count() / 1000000 >= 1) {
+	_start = end;
+	if (_show_fps) {
+	    scene->reset_text("fps", std::to_string(_fps) + " fps");
+	}	
+	_fps = 0;
+    }
 }
 
 void Core::_process_events()

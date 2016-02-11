@@ -7,6 +7,9 @@
 #include "texture.h"
 #include "sprite.h"
 
+#include "text.h"
+#include "textprogram.h"
+
 #include "programdatareader.h"
 #include "meshdatareader.h"
 #include "texturedatareader.h"
@@ -26,6 +29,9 @@ private:
     using MeshMap = std::map<std::string, Mesh>;
     using TextureMap = std::map<std::string, Texture>;
     using SpriteMap = std::map<std::string, Sprite>;
+
+    using TextProgramMap = std::map<std::string, TextProgram>;    
+    using TextMeshMap = std::map<std::string, TextMesh>;    
 
     using ProgramDataReaderPtr = std::unique_ptr<ProgramDataReader>;
     using MeshDataReaderPtr = std::unique_ptr<MeshDataReader>;
@@ -51,6 +57,11 @@ public:
     Texture entity_texture(const std::string& texture_name);
 
     Sprite entity_sprite(const std::string& sprite_name);
+
+    TextProgram text_program(const std::string& vs_name,
+			 const std::string& fs_name);
+
+    TextMesh text_mesh(const TextProgram& program);
 
 private:
     Program _create_program(const ProgramRawDataPtr& prog_rd);
@@ -83,4 +94,7 @@ private:
     MeshMap _mesh_map;
     TextureMap _texture_map;
     SpriteMap _sprite_map;
+
+    TextProgramMap _textprogrammap;
+    TextMeshMap _textmeshmap;    
 };

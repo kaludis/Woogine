@@ -13,7 +13,7 @@ namespace utils
 	    GLenum ret = glGetError();
 
 	    if (ret != GL_NO_ERROR) {
-		std::fprintf(stderr, "ERROR %s:%d:%s(): %s\n", file, line, func,
+		std::fprintf(stderr, "OPENGL ERROR %s:%d:%s(): %s\n", file, line, func,
 			     gluErrorString(ret));
 		exit(EXIT_FAILURE);
 	    }

@@ -18,6 +18,7 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/window.cc
    ${CMAKE_CURRENT_SOURCE_DIR}/spritedatareader.cc
    ${CMAKE_CURRENT_SOURCE_DIR}/sprite.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/textmanager.cc
    PARENT_SCOPE
 )
 
@@ -58,5 +59,10 @@ set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/spritedatareader.h
   ${CMAKE_CURRENT_SOURCE_DIR}/sprite.h
   ${CMAKE_CURRENT_SOURCE_DIR}/spriterawdata.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textmanager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/text.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textmesh.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textprogram.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/point.hpp
   PARENT_SCOPE
   )

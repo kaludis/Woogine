@@ -45,9 +45,11 @@ void Window::_init()
 	throw WindowException{std::string{"glewInit error: "}.append(err)};
     }
 
+    glEnable(GL_CULL_FACE);    
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);    
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    CHECK_ERR();
 }
 
 void Window::swap_window()

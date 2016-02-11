@@ -1,10 +1,13 @@
 #pragma once
 
+#include <memory>
+
 #include <GL/glew.h>
 
 #include <glm/glm.hpp>
 
 #include <map>
+#include <memory>
 #include <string>
 
 class TextManager {
@@ -34,3 +37,5 @@ private:
     std::string _fontfile;;
     CharacterMap _charmap;
 };
+
+using TextManagerPtr =std::unique_ptr<TextManager>;

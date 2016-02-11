@@ -1,6 +1,7 @@
 #include "../src/entitycreator.h"
 #include "../src/entity.h"
 #include "../src/entityresources.h"
+#include "../src/text.h"
 
 #include "../src/datareaderexception.h"
 #include "../src/resourcemanagerexception.h"
@@ -47,12 +48,17 @@ int main()
 	core.set_camera(CameraPtr{new Camera{}});
 	
 	EntityCreator ecreator{};
-	ecreator.set_entities_file("../data/entities.data");
+	ecreator.set_entities_file("../data/entities.dat");
 
 	ScenePtr scene{new Scene{}};
 
-	scene->add_entity(ecreator.create_entity("quad"));
+	scene->add_entity(ecreator.create_entity("object1", "quad"));
+	scene->add_entity(ecreator.create_entity("runmen", "runmen"));
 
+	scene->add_text("fps", ecreator.create_text("fps_text", "0 fps",
+							 Point2f{5.0f, 5.0f}, 0.8f));
+		DEBUG_MSG("1\n");    
+	core.show_fps(true);
 	while (core.is_running()) {
 	    core.run_scene(scene);
 	}

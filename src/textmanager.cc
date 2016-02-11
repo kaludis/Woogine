@@ -21,7 +21,7 @@ TextManager::Character TextManager::character(char c) const
     if (it == _charmap.end()) {
 	return Character{};
     } else {
-	it->second;
+	return it->second;
     }
 }    
 
@@ -58,7 +58,14 @@ void TextManager::_init()
 
 	GLuint texture;
 	glGenTextures(1, &texture);
+	CHECK_ERR();
 	glBindTexture(GL_TEXTURE_2D, texture);
+	if (glIsTexture(texture) != GL_TRUE) {
+	    DEBUG_PRINT("Invalid texture id\nTexture id: %d\n", texture);
+	    is_error = true;
+	    break;	    
+	}
+	
 	glTexImage2D(GL_TEXTURE_2D,
 		     0,
 		     GL_RED,
@@ -78,7 +85,7 @@ void TextManager::_init()
 	    texture, 
 	    glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 	    glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-	    face->glyph->advance.x
+	    static_cast<GLuint>(face->glyph->advance.x)
 	};
 
 	_charmap[c] = character;

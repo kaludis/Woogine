@@ -5,13 +5,18 @@
 #include "window.h"
 #include "camera.h"
 
+#include <chrono>
+
 class Core {
 public:
     Core()
 	: _pscene{nullptr},
 	_prenderer{nullptr},
 	_pwindow{nullptr},
-	_is_running{true}
+	_is_running{true},
+	_show_fps{false},
+	_fps{0},
+	_start{std::chrono::system_clock::now()}
     {}
     
     void set_renderer(RendererPtr&& renderer);
@@ -24,6 +29,8 @@ public:
 
     void run_scene(ScenePtr& scene);
 
+    void show_fps(bool show);
+
 private:
     float _time_elapsed();
     void _process_events();
@@ -34,6 +41,10 @@ private:
     WindowPtr _pwindow;
     CameraPtr _pcamera;
     bool _is_running;
+
+    bool _show_fps;
+    unsigned int _fps;
+    std::chrono::system_clock::time_point _start;
 };
 
 inline
@@ -59,4 +70,10 @@ inline
 void Core::set_camera(CameraPtr&& camera)
 {
     _pcamera.swap(camera);
+}
+
+inline
+void Core::show_fps(bool show)
+{
+    _show_fps = show;
 }

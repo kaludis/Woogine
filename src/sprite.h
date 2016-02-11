@@ -26,9 +26,11 @@ private:
     using QuadUVListIter = typename QuadUVList::const_iterator;
 
 public:
+    void reset();
+    
     void next();
 
-     QuadUV quaduv() const;
+    QuadUV quaduv() const;
 
     GLuint buffer_id() const;
 
@@ -57,7 +59,7 @@ GLuint Sprite::texture_id() const
 }
 
 inline
- Sprite::QuadUV Sprite::quaduv() const
-{
+Sprite::QuadUV Sprite::quaduv() const
+{    
     return *_it;
 }

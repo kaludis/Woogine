@@ -15,6 +15,7 @@ SpriteDataReader::read_sprite_data(const std::string& filename)
 
     std::ifstream ifs{filename};
     if (!ifs.is_open()) {
+	DEBUG_PRINT("No such file '%s'\n", filename.c_str());
 	return SpriteRawDataPtr{nullptr};
     }
 

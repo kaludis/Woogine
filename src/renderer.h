@@ -5,6 +5,7 @@
 #include "sprite.h"
 #include "camera.h"
 #include "window.h"
+#include "textmanager.h"
 
 #include <memory>
 #include <limits>
@@ -12,6 +13,9 @@
 #include <glm/glm.hpp>
 
 class Renderer {
+public:
+    using TextManagerPtr = std::unique_ptr<TextManager>;
+
 public:
     Renderer();
     
@@ -26,6 +30,8 @@ private:
 
     void _render_sprite(const Sprite& sprite);
 
+    void _render_text(const Text& text);
+
     glm::mat4 _projection_matrix() const;
 
     void _use_program(const Program& program);
@@ -35,18 +41,20 @@ private:
 
 private:
     Window* _pwindow;
+    TextManagerPtr _ptxtman;
     // current OGL state
     Program _program;
     GLuint _buffer;
     GLuint _indexbuffer;
     GLuint _index_count;
-    GLuint _tex;    
+    GLuint _tex;
 };
 
 using RendererPtr = std::unique_ptr<Renderer>;
 
 inline
 Renderer::Renderer()
+    : _ptxtman{new TextManager{"../fonts/DejaVuSansMono.ttf"}}
 {
     _reset_state();
 }

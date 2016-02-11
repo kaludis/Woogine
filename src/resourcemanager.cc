@@ -21,9 +21,6 @@ Program ResourceManager::entity_program(const std::string& vs_name,
     std::string prog_name = vs_name + fs_name;
     auto it = _program_map.find(prog_name);
     if (it == _program_map.end()) {
-	// FSResolver::ProgramFiles pfiles =
-	//     _pfsresolver->program_files(entity_type);
-
 	ProgramRawDataPtr prog_rd =
 	    _pprogdatareader->read_program_data(vs_name, fs_name);
 
@@ -86,10 +83,11 @@ Texture ResourceManager::entity_texture(const std::string& texture_name)
 
 Sprite ResourceManager::entity_sprite(const std::string& sprite_name)
 {
+    DEBUG_PRINT("name %s\n", sprite_name.c_str());
     auto it = _sprite_map.find(sprite_name);
     if (it == _sprite_map.end()) {
-
 	SpriteRawDataPtr sprite_rd = _pspritedatareader->read_sprite_data(sprite_name);
+
 	Texture new_tex = _create_texture(sprite_rd->texture_data);
 	// TODO: Handling errors
 
@@ -99,6 +97,91 @@ Sprite ResourceManager::entity_sprite(const std::string& sprite_name)
 	_sprite_map[sprite_name] = *sprite;
 
 	return *sprite;
+    } else {
+	return it->second;
+    }
+}
+
+TextProgram ResourceManager::text_program(const std::string& vs_name,
+		     const std::string& fs_name)
+{
+    std::string progname = vs_name + fs_name;
+    auto it = _textprogrammap.find(progname);
+    if (it == _textprogrammap.end()) {
+	ProgramRawDataPtr prog_rd =
+	    _pprogdatareader->read_program_data(vs_name, fs_name);
+
+	GLuint vs_id = _create_shader(prog_rd->vs_source, GL_VERTEX_SHADER);
+	if (!vs_id) ResourceManagerException{"Text vertex shader compile error"};
+
+	GLuint fs_id = _create_shader(prog_rd->fs_source, GL_FRAGMENT_SHADER);
+	if (!fs_id) throw ResourceManagerException{"Text fragment shader compile error"};
+
+	TextProgram text_program;
+	
+	text_program.program_id = _link_program(vs_id, fs_id);
+	if (!text_program.program_id)
+	    throw ResourceManagerException{"Text shader program link error"};
+
+	text_program.uniform_projection = _uniform_location(text_program.program_id, "projection");
+	if (text_program.uniform_projection == -1) {
+	    throw ResourceManagerException{"Could not get uniform location " \
+		    "for 'projection' uniform in text shader"};
+	}
+
+	text_program.uniform_glyph = _uniform_location(text_program.program_id, "glyph");
+	if (text_program.uniform_glyph == -1) {
+	    throw ResourceManagerException{"Could not get uniform location " \
+		    "for 'glyph' uniform in text shader"};
+	}
+
+	text_program.uniform_textcolor = _uniform_location(text_program.program_id, "textcolor");
+	if (text_program.uniform_textcolor == -1) {
+	    throw ResourceManagerException{"Could not get uniform location " \
+		    "for 'textcolor' uniform in text shader"};
+	}		
+
+	text_program.attribute_texcoord = _attrib_location(text_program.program_id, "texcoord");
+	if (text_program.attribute_texcoord == -1) {
+	    throw ResourceManagerException{"Could not get uniform location " \
+		    "for 'textcoord' uniform in text shader"};
+	}
+
+	_textprogrammap[progname] = text_program;
+	return text_program;
+    } else {
+	return it->second;
+    }    
+}
+
+TextMesh ResourceManager::text_mesh(const TextProgram& program)
+{
+    auto it = _textmeshmap.find("text");
+    if (it == _textmeshmap.end()) {
+	TextMesh text_mesh;
+
+	//	glGenVertexArrays(1, &text_mesh.vao);
+	glGenBuffers(1, &text_mesh.vbo);
+	
+	//	glBindVertexArray(text_mesh.vao);
+	//	if (glIsVertexArray(text_mesh.vao) != GL_TRUE) {
+	//	    throw ResourceManagerException("Invalid VAO for textmesh");
+	//	}
+	
+	glBindBuffer(GL_ARRAY_BUFFER, text_mesh.vbo);
+	if (glIsBuffer(text_mesh.vbo) != GL_TRUE) {
+	    throw ResourceManagerException{"Invalid VBO for text mesh"};
+	}
+
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+	//	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+	//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//	glBindVertexArray(0);
+	CHECK_ERR();
+
+	_textmeshmap["text"] = text_mesh;
+	return text_mesh;
     } else {
 	return it->second;
     }
@@ -275,8 +358,6 @@ SpritePtr ResourceManager::_create_sprite(const SpriteRawData& sprite_rd)
     float step_xuv = 1.0f / cols;
     float step_yuv = 1.0f / rows;
 
-    DEBUG_PRINT("step_xuv : %f, step_yuv: %f\n", step_xuv, step_yuv);
-
     /*
       3 (0, 1) ----------(1, 1) 2
            |                |
@@ -310,7 +391,10 @@ SpritePtr ResourceManager::_create_sprite(const SpriteRawData& sprite_rd)
 	    
 	    sprite->_quaduvlist.push_back(quaduv);
 	    
-	    if (!--count) i = rows;
+	    if (!--count) {
+		i = rows;
+		break;
+	    }
 	}
 
 	quaduv.bottom_left.uvcoord[0] = -step_xuv;
@@ -464,18 +548,16 @@ void ResourceManager::_release_resources()
 	for (auto& pair : _mesh_map) {
 	    if (glIsBuffer(pair.second.buffer_id) == GL_TRUE) {
 		glDeleteBuffers(1, &pair.second.buffer_id);
-		CHECK_ERR();
 	    }
 
 	    if (glIsBuffer(pair.second.indexbuffer_id) == GL_TRUE) {
 		glDeleteBuffers(1, &pair.second.indexbuffer_id);
-		CHECK_ERR();
 	    }
 
 	    if (glIsBuffer(pair.second.texbuffer_id == GL_TRUE)) {
 		glDeleteBuffers(1, &pair.second.texbuffer_id);
-		CHECK_ERR();
-	    }	    	    
+	    }
+	    CHECK_ERR();	    
 	}
     }
 
@@ -485,6 +567,28 @@ void ResourceManager::_release_resources()
 		glDeleteTextures(1, &pair.second.tex_id);
 		CHECK_ERR();
 	    }
+	}
+    }
+
+    if (_textprogrammap.size()) {
+	for (auto& pair : _textprogrammap) {
+	    if (glIsProgram(pair.second.program_id) == GL_TRUE) {
+		glDeleteProgram(pair.second.program_id);
+		CHECK_ERR();
+	    }
+	}
+    }
+
+    if (_textmeshmap.size()) {
+	for (auto& pair : _textmeshmap) {
+	    if (glIsVertexArray(pair.second.vao) == GL_TRUE) {
+		glDeleteVertexArrays(1, &pair.second.vao);
+	    }
+
+	    if (glIsBuffer(pair.second.vbo) == GL_TRUE) {
+		glDeleteBuffers(1, &pair.second.vbo);
+	    }
+	    CHECK_ERR();
 	}
     }
 }

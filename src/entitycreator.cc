@@ -8,25 +8,36 @@
 #include <fstream>
 
 Entity
-EntityCreator::create_entity(const std::string& entity_name)
+EntityCreator::create_entity(const std::string& entity_name, const std::string& entity_model)
 {
-    if (!entity_name.size()) {
-	throw EntityCreatorException{"Empty entity name"};
-    }
-
-    if(_entity_name != entity_name) {
-	_entity_name = entity_name;	
+    if(_entity_model != entity_model) {
+	_entity_model = entity_model;	
 	_entity_files();
     }
 
-    Entity entity;
+    Entity entity{entity_name};
     entity._res.program = _presman->entity_program(_vs_file, _fs_file);
-    entity._res.mesh = _presman->entity_mesh(_mesh_data_file);
+    entity._res.mesh = _presman->entity_mesh(_data_file);
     entity._res.texture = _presman->entity_texture(_texture_file);
-    entity._res.sprite = _presman->entity_sprite("../data/explosion17.dat");
-    entity._name = _entity_name;
+    entity._res.sprite = _presman->entity_sprite(_sprite_file);
 
     return entity;
+}
+
+Text EntityCreator::create_text(const std::string& entity_model,
+				const std::string& text, const Point2f& position,
+				float scale, const glm::vec3& color)
+{
+    if(_entity_model != entity_model) {
+	_entity_model = entity_model;	
+	_entity_files();
+    }
+
+    Text txt{text, position, scale, color};
+    txt._program = _presman->text_program(_vs_file, _fs_file);
+    txt._mesh = _presman->text_mesh(txt.program());
+
+    return txt;
 }
 
 void EntityCreator::_entity_files()
@@ -40,21 +51,21 @@ void EntityCreator::_entity_files()
     bool filled{false};
     std::string line{};
     while (std::getline(ifs, line)) {
-	std::string::size_type pos = line.find(_entity_name);
-	if ((pos != std::string::npos) && (line[pos + _entity_name.length()] == ';')) {
+	std::string::size_type pos = line.find(_entity_model);
+	if ((pos != std::string::npos) && (line[pos + _entity_model.length()] == ';')) {
 	    utils::strings::StringList slist =
 		utils::strings::split(line, ";");
 	    _vs_file = slist[1];
 	    _fs_file = slist[2];
-	    _mesh_data_file = slist[3];
+	    _data_file = slist[3];
 	    _texture_file = slist[4];
-	    
+	    _sprite_file = slist[5];
 	    filled = true;
 	}
     }
 
     if (!filled) throw EntityCreatorException{"No data found for entity '" +
-			 _entity_name + "'"};    
+			 _entity_model + "'"};    
 
     ifs.close();    
 }

@@ -2,6 +2,8 @@
 
 #include "resourcemanager.h"
 #include "entity.h"
+#include "text.h"
+#include "point.hpp"
 
 #include <string>
 #include <memory>
@@ -15,7 +17,12 @@ public:
 	: _presman{new ResourceManager{}}
     {}
 
-    Entity create_entity(const std::string& entity_name);
+    Entity create_entity(const std::string& entity_name,
+			 const std::string& entity_model);
+
+    Text create_text(const std::string& entity_name,
+		     const std::string& text, const Point2f& position,
+		     float scale = 1.0f, const glm::vec3& color = glm::vec3(1.0f, 1.0f, 1.0f));
 
     void set_entities_file(const std::string& entity_file);
 
@@ -26,12 +33,13 @@ private:
     ResourceManagerPtr _presman;
 
     std::string _entity_file;
-    std::string _entity_name;
+    std::string _entity_model;
 
     std::string _vs_file;
     std::string _fs_file;
-    std::string _mesh_data_file;
-    std::string _texture_file;    
+    std::string _data_file;
+    std::string _texture_file;
+    std::string _sprite_file;
 };
 
 inline

@@ -1,0 +1,5 @@
+cube;../shaders/vertex_shader.glsl;../shaders/fragment_shader.glsl;../data/cube.dat;../textures/cube.png;;
+triangle;../shaders/vertex_shader.glsl;../shaders/fragment_shader.glsl;../data/cube.dat;../textures/cube.png;;
+quad;../shaders/vertex_shader.glsl;../shaders/fragment_shader.glsl;../data/quad.dat;../textures/cube.png;../data/explosion17.dat;
+fps_text;../shaders/text.vs.glsl;../shaders/text.fs.glsl;../data/text.dat;;;
+runmen;../shaders/vertex_shader.glsl;../shaders/fragment_shader.glsl;../data/quad.dat;../textures/cube.png;../data/runmen.dat;
