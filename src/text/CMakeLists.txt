@@ -1,0 +1,12 @@
+set(SOURCE
+   ${SOURCE}
+   ${CMAKE_CURRENT_SOURCE_DIR}/textmanager.cc
+   PARENT_SCOPE
+)
+
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/text.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textmanager.h
+  PARENT_SCOPE
+  )

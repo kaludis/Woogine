@@ -1,9 +1,10 @@
 #pragma once
 
-#include "resourcemanager.h"
-#include "entity.h"
-#include "text.h"
-#include "point.hpp"
+#include "resources/resourcemanager.h"
+#include "entity/entity.h"
+#include "entity/abstractvisualentity.h"
+#include "text/text.h"
+#include "math/point.hpp"
 
 #include <string>
 #include <memory>
@@ -17,7 +18,7 @@ public:
 	: _presman{new ResourceManager{}}
     {}
 
-    Entity create_entity(const std::string& entity_name,
+    IVisualEntityPtr create_entity(const std::string& entity_name,
 			 const std::string& entity_model);
 
     Text create_text(const std::string& entity_name,

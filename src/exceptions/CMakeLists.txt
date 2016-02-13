@@ -1,0 +1,10 @@
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/datareaderexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/entitycreatorexc.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/fsresolverexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/resourcemanagerexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/texturedatareaderexception.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/windowexc.h
+  PARENT_SCOPE
+  )

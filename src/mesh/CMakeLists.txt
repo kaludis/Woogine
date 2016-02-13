@@ -1,0 +1,6 @@
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/mesh.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textmesh.h
+  PARENT_SCOPE
+  )

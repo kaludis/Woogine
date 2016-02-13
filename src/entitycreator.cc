@@ -1,27 +1,27 @@
 #include "entitycreator.h"
-#include "entitycreatorexc.h"
-#include "utils.h"
+#include "exceptions/entitycreatorexc.h"
+#include "utils/utils.h"
 
-#include "sprite.h"
-#include "debug.h"
+#include "sprite/sprite.h"
+#include "debug/debug.h"
 
 #include <fstream>
 
-Entity
+IVisualEntityPtr
 EntityCreator::create_entity(const std::string& entity_name, const std::string& entity_model)
 {
     if(_entity_model != entity_model) {
 	_entity_model = entity_model;	
 	_entity_files();
     }
+    
+    Entity* entity= new Entity{entity_name};
+    entity->_res.program = _presman->entity_program(_vs_file, _fs_file);
+    entity->_res.mesh = _presman->entity_mesh(_data_file);
+    entity->_res.texture = _presman->entity_texture(_texture_file);
+    entity->_res.sprite = _presman->entity_sprite(_sprite_file);
 
-    Entity entity{entity_name};
-    entity._res.program = _presman->entity_program(_vs_file, _fs_file);
-    entity._res.mesh = _presman->entity_mesh(_data_file);
-    entity._res.texture = _presman->entity_texture(_texture_file);
-    entity._res.sprite = _presman->entity_sprite(_sprite_file);
-
-    return entity;
+    return IVisualEntityPtr{entity};
 }
 
 Text EntityCreator::create_text(const std::string& entity_model,
@@ -35,7 +35,7 @@ Text EntityCreator::create_text(const std::string& entity_model,
 
     Text txt{text, position, scale, color};
     txt._program = _presman->text_program(_vs_file, _fs_file);
-    txt._mesh = _presman->text_mesh(txt.program());
+    txt._mesh = _presman->text_mesh();
 
     return txt;
 }

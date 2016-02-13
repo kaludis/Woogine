@@ -1,21 +1,23 @@
 #pragma once
 
-#include "entity.h"
-#include "text.h"
-#include "debug.h"
+#include "entity/abstractvisualentity.h"
+#include "text/text.h"
+#include "debug/debug.h"
 
 #include <map>
 #include <vector>
 #include <string>
 #include <memory>
 
+class IRenderer;
+
 class Scene {
 public:
-    using EntityList = std::vector<Entity>;
+    using EntityPtrList = std::vector<IVisualEntityPtr>;
     using TextMap = std::map<std::string, Text>;
 
 public:
-    void add_entity(Entity&& entity);
+    void add_entity(IVisualEntityPtr&& entity);
 
     void add_text(const std::string& tag, Text&& text);
 
@@ -23,21 +25,23 @@ public:
 
     void update(float dt);
 
-    const EntityList& entity_list() const;
+    void render_scene(IRenderer& render);
+
+    const EntityPtrList& entity_list() const;
 
     const TextMap& text_map() const;
 
 private:
-    EntityList _elist;
+    EntityPtrList _elist;
     TextMap _txtmap;
 };
 
 using ScenePtr = std::unique_ptr<Scene>;
 
 inline
-void Scene::add_entity(Entity&& entity)
+void Scene::add_entity(IVisualEntityPtr&& entity)
 {
-    _elist.emplace_back(std::move(entity));
+    _elist.emplace_back(IVisualEntityPtr{entity.release()});
 }
 
 inline
@@ -50,7 +54,7 @@ void Scene::add_text(const std::string& tag, Text&& text)
 }
 
 inline
-const Scene::EntityList& Scene::entity_list() const
+const Scene::EntityPtrList& Scene::entity_list() const
 {
     return _elist;
 }

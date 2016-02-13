@@ -1,5 +1,7 @@
 #include "core.h"
 
+#include <SDL2/SDL.h>
+
 #include <chrono>
 
 constexpr unsigned int msec_per_sec = 1000000;
@@ -10,11 +12,15 @@ void Core::run_scene(ScenePtr& scene)
     
     float dt = _time_elapsed();
 
-    _process_events();
-    
+    _poll_events();
+
     scene->update(dt);
 
-    _prenderer->render_scene(scene, _pcamera);
+    _prenderer->set_camera(_pcamera.get());
+    
+    scene->render_scene(*_prenderer);
+
+    //_prenderer->render_scene(scene, _pcamera);
 
     _pwindow->swap_window();
 
@@ -31,7 +37,7 @@ void Core::run_scene(ScenePtr& scene)
     }
 }
 
-void Core::_process_events()
+void Core::_poll_events()
 {
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {

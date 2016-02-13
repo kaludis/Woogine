@@ -1,0 +1,6 @@
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/program.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/textprogram.h
+  PARENT_SCOPE
+  )

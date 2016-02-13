@@ -24,6 +24,36 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/src")
 
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/renderer")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/entity")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/window")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/camera")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/resources")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/debug")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/defs")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/exceptions")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/math")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/mesh")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/program")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/sprite")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/text")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/texture")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/utils")
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/test")
 
 INCLUDE_DIRECTORIES(

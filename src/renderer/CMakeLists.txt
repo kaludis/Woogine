@@ -1,0 +1,12 @@
+set(SOURCE
+   ${SOURCE}
+   ${CMAKE_CURRENT_SOURCE_DIR}/renderer.cc
+   PARENT_SCOPE
+)
+
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/abstractrenderer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/renderer.h
+  PARENT_SCOPE
+  )

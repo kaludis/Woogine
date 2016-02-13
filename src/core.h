@@ -1,9 +1,10 @@
 #pragma once
 
-#include "renderer.h"
+#include "renderer/abstractrenderer.h"
+#include "window/abstractwindow.h"
+#include "camera/abstractcamera.h"
+
 #include "scene.h"
-#include "window.h"
-#include "camera.h"
 
 #include <chrono>
 
@@ -19,11 +20,11 @@ public:
 	_start{std::chrono::system_clock::now()}
     {}
     
-    void set_renderer(RendererPtr&& renderer);
+    void set_renderer(IRendererPtr&& renderer);
 
-    void set_window(WindowPtr&& window);
+    void set_window(IWindowPtr&& window);
 
-    void set_camera(CameraPtr&& camera);
+    void set_camera(ICameraPtr&& camera);
     
     bool is_running() const;
 
@@ -33,13 +34,13 @@ public:
 
 private:
     float _time_elapsed();
-    void _process_events();
+    void _poll_events();
     
 private:
     ScenePtr _pscene;
-    RendererPtr _prenderer;
-    WindowPtr _pwindow;
-    CameraPtr _pcamera;
+    IRendererPtr _prenderer;
+    IWindowPtr _pwindow;
+    ICameraPtr _pcamera;
     bool _is_running;
 
     bool _show_fps;
@@ -54,20 +55,20 @@ bool Core::is_running() const
 }
 
 inline
-void Core::set_renderer(RendererPtr&& renderer)
+void Core::set_renderer(IRendererPtr&& renderer)
 {
     _prenderer.swap(renderer);
     _prenderer->set_window(_pwindow.get());
 }
 
 inline
-void Core::set_window(WindowPtr&& window)
+void Core::set_window(IWindowPtr&& window)
 {
     _pwindow.swap(window);
 }
 
 inline
-void Core::set_camera(CameraPtr&& camera)
+void Core::set_camera(ICameraPtr&& camera)
 {
     _pcamera.swap(camera);
 }

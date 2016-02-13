@@ -1,0 +1,12 @@
+set(SOURCE
+   ${SOURCE}
+   ${CMAKE_CURRENT_SOURCE_DIR}/camera.cc
+   PARENT_SCOPE
+)
+
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/abstractcamera.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/camera.h
+  PARENT_SCOPE
+  )
