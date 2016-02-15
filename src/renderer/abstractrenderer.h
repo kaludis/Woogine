@@ -2,7 +2,7 @@
 
 #include <memory>
 
-class IVisualEntity;
+class Entity;
 class IWindow;
 class ICamera;
 class Text;
@@ -11,7 +11,7 @@ class IRenderer {
 public:
     ~IRenderer() {}
 
-    virtual void render(const IVisualEntity& entity) = 0;
+    virtual void render(const Entity& entity) = 0;
 
     virtual void render_text(const Text& text) = 0;
 

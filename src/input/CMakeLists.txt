@@ -1,0 +1,11 @@
+set(SOURCE
+   ${SOURCE}
+   ${CMAKE_CURRENT_SOURCE_DIR}/input.cc
+   PARENT_SCOPE
+)
+
+set(HEADERS
+  ${HEADERS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/input.h
+  PARENT_SCOPE
+  )

@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "../renderer/abstractrenderer.h"
-
+#include "../controller/abstractcontroller.h"
+/*
 #include <SDL2/SDL.h>
 
 #define GLM_FORCE_RADIANS
@@ -8,11 +9,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+*/
+//#include <cmath>
 
-#include <cmath>
-
-constexpr unsigned int msec_per_sec = 1000000;
-
+//constexpr unsigned int msec_per_sec = 1000000;
+/*
 void Entity::update(float dt)
 {
     std::chrono::system_clock::time_point now =
@@ -63,8 +64,14 @@ void Entity::update(float dt)
 	_res.sprite.next();
     }
 }
+*/
+void Entity::accept_controller(IController& controller)
+{
+    controller.process(*this);
+}
 
 void Entity::accept_renderer(IRenderer& renderer)
 {
     renderer.render(*this);
 }
+

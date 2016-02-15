@@ -54,6 +54,10 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/src/texture")
 
 add_subdirectory("${PROJECT_SOURCE_DIR}/src/utils")
 
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/input")
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/src/controller")
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/test")
 
 INCLUDE_DIRECTORIES(

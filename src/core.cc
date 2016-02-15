@@ -1,4 +1,5 @@
 #include "core.h"
+#include "../debug/debug.h"
 
 #include <SDL2/SDL.h>
 
@@ -8,15 +9,20 @@ constexpr unsigned int msec_per_sec = 1000000;
 
 void Core::run_scene(ScenePtr& scene)
 {
+    if (!_is_init) {
+	_is_init = true;
+	_init();
+    }
+
     ++_fps;
     
     float dt = _time_elapsed();
 
-    _poll_events();
+    _poll_events(*_pinput);
 
-    scene->update(dt);
+    scene->update(dt, *_pcontroller);
 
-    _prenderer->set_camera(_pcamera.get());
+    //    _prenderer->set_camera(_pcamera.get());
     
     scene->render_scene(*_prenderer);
 
@@ -37,7 +43,16 @@ void Core::run_scene(ScenePtr& scene)
     }
 }
 
-void Core::_poll_events()
+void Core::_init()
+{
+    _prenderer->set_window(_pwindow.get());
+
+    _prenderer->set_camera(_pcamera.get());    
+    
+    _pcontroller->set_input(_pinput.get());
+}
+
+void Core::_poll_events(Input& input)
 {
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {
@@ -53,7 +68,27 @@ void Core::_poll_events()
 	    }
 	    break;
 	}
-    }    
+    }
+
+    input.reset();
+
+    int keys{0};
+    const Uint8* kbstate = SDL_GetKeyboardState(&keys);
+    if (kbstate[SDL_SCANCODE_UP]) {
+	input.set_keystate("kUp", true);
+    }
+
+    if (kbstate[SDL_SCANCODE_DOWN]) {
+	input.set_keystate("kDown", true);
+    }
+
+    if (kbstate[SDL_SCANCODE_LEFT]) {
+	input.set_keystate("kLeft", true);
+    }
+
+    if (kbstate[SDL_SCANCODE_RIGHT]) {
+	input.set_keystate("kRight", true);
+    }
 }
 
 float Core::_time_elapsed()

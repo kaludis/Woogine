@@ -1,5 +1,5 @@
 #include "renderer.h"
-#include "../entity/abstractvisualentity.h"
+#include "../entity/entity.h"
 #include "../resources/entityresources.h"
 #include "../mesh/mesh.h"
 #include "../texture/texture.h"
@@ -19,7 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-void Renderer::render(const IVisualEntity& entity)
+void Renderer::render(const Entity& entity)
 {
     const EntityResources& eres = entity.resources();
 

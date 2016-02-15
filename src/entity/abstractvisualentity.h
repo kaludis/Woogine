@@ -8,11 +8,15 @@
 #include <glm/glm.hpp>
 
 class IRenderer;
+class IController;
+
 struct EntityResources;
 
 class IVisualEntity : public IEntity {
 public:
     virtual void accept_renderer(IRenderer& renderer) = 0;
+
+    virtual void accept_controller(IController& controller) = 0;    
 
     virtual std::string asset_name() const = 0;
 

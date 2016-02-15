@@ -1,11 +1,14 @@
 #include "scene.h"
 #include "entity/entity.h"
 #include "renderer/abstractrenderer.h"
+#include "controller/abstractcontroller.h"
 
-void Scene::update(float dt)
+void Scene::update(float dt, IController& controller)
 {
+    controller.set_dt(dt);
+    
     for (const IVisualEntityPtr& entity : _elist) {
-	entity->update(dt);
+	entity->accept_controller(controller);
     }
 }
 

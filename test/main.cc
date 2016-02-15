@@ -14,6 +14,9 @@
 #include "../src/renderer/renderer.h"
 #include "../src/camera/abstractcamera.h"
 #include "../src/camera/camera.h"
+#include "../src/input/input.h"
+#include "../src/controller/abstractcontroller.h"
+#include "../src/controller/controller.h"
 #include "../src/scene.h"
 
 #include "../src/debug/debug.h"
@@ -32,6 +35,8 @@ int main()
 	core.set_window(IWindowPtr{new Window{}});
 	core.set_renderer(IRendererPtr{new Renderer{}});
 	core.set_camera(ICameraPtr{new Camera{}});
+	core.set_input(InputPtr{new Input{}});
+	core.set_controller(IControllerPtr{new Controller{}});
 	
 	EntityCreator ecreator{};
 	ecreator.set_entities_file("../data/entities.dat");

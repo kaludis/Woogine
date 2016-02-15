@@ -10,6 +10,7 @@
 #include <memory>
 
 class IRenderer;
+class IController;
 
 class Scene {
 public:
@@ -23,7 +24,7 @@ public:
 
     void reset_text(const std::string& tag, const std::string& new_text);
 
-    void update(float dt);
+    void update(float dt, IController& controller);
 
     void render_scene(IRenderer& render);
 
@@ -41,6 +42,7 @@ using ScenePtr = std::unique_ptr<Scene>;
 inline
 void Scene::add_entity(IVisualEntityPtr&& entity)
 {
+    entity->init();
     _elist.emplace_back(IVisualEntityPtr{entity.release()});
 }
 

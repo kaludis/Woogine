@@ -12,7 +12,7 @@
 
 #include <glm/glm.hpp>
 
-class IVisualEntity;
+class Entity;
 struct EntityResources;
 class Sprite;
 class Camera;
@@ -24,7 +24,7 @@ public:
 public:
     Renderer();
 
-    void render(const IVisualEntity& entity) override;
+    void render(const Entity& entity) override;
 
     void render_text(const Text& text) override;
     
