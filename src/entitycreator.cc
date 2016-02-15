@@ -8,14 +8,15 @@
 #include <fstream>
 
 IVisualEntityPtr
-EntityCreator::create_entity(const std::string& entity_name, const std::string& entity_model)
+EntityCreator::create_entity(const std::string& entity_name, const std::string& entity_model,
+			     bool is_dynamic)
 {
     if(_entity_model != entity_model) {
 	_entity_model = entity_model;	
 	_entity_files();
     }
     
-    Entity* entity= new Entity{entity_name};
+    Entity* entity= new Entity{entity_name, is_dynamic};
     entity->_res.program = _presman->entity_program(_vs_file, _fs_file);
     entity->_res.mesh = _presman->entity_mesh(_data_file);
     entity->_res.texture = _presman->entity_texture(_texture_file);

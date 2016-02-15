@@ -22,11 +22,9 @@ void Core::run_scene(ScenePtr& scene)
 
     scene->update(dt, *_pcontroller);
 
-    //    _prenderer->set_camera(_pcamera.get());
+    _prenderer->reset();
     
     scene->render_scene(*_prenderer);
-
-    //_prenderer->render_scene(scene, _pcamera);
 
     _pwindow->swap_window();
 
@@ -74,6 +72,7 @@ void Core::_poll_events(Input& input)
 
     int keys{0};
     const Uint8* kbstate = SDL_GetKeyboardState(&keys);
+    
     if (kbstate[SDL_SCANCODE_UP]) {
 	input.set_keystate("kUp", true);
     }

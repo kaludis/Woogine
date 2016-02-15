@@ -15,6 +15,8 @@ public:
 
     virtual void render_text(const Text& text) = 0;
 
+    virtual void reset() = 0;
+
     virtual void set_window(IWindow* window) = 0;
 
     virtual void set_camera(ICamera* camera) = 0;

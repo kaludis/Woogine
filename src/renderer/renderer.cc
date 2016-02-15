@@ -22,13 +22,11 @@
 void Renderer::render(const Entity& entity)
 {
     const EntityResources& eres = entity.resources();
-
-    _reset_state();
     
     _use_program(eres.program);
 
     _pass_viewprojection(_projection_matrix(), _pcamera->view_matrix());    
-
+    
     _render_entity(eres, entity.model_matrix());
 }
 
@@ -39,7 +37,11 @@ void Renderer::_render_entity(const EntityResources& eres, const glm::mat4& mode
 		       GL_FALSE,
 		       glm::value_ptr(model_matrix));
 
-    _render_sprite(eres.sprite);
+    if (eres.sprite) {
+	_render_sprite(*eres.sprite);
+    } else {
+	_render_texture(eres);
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, eres.mesh.buffer_id);    
     glEnableVertexAttribArray(eres.program.attrib_coord3d);
@@ -135,6 +137,24 @@ void Renderer::render_text(const Text& text)
     glBindTexture(GL_TEXTURE_2D, 0);
     CHECK_ERR();	        
 }
+
+void Renderer::_render_texture(const EntityResources& eres)
+{
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i(eres.program.uniform_sampler2d, 0);
+    glBindTexture(GL_TEXTURE_2D, eres.texture.tex_id);
+
+    glBindBuffer(GL_ARRAY_BUFFER, eres.mesh.texbuffer_id);
+    glEnableVertexAttribArray(eres.program.attrib_texcoord);
+    glVertexAttribPointer(
+    			  eres.program.attrib_texcoord,
+    			  2,
+    			  GL_FLOAT,
+    			  GL_FALSE,
+    			  sizeof(UVCoords),
+    			  BUFFER_OFFSET(offsetof(UVCoords, uvcoord))
+    			  );    
+}
 /*
 void Renderer::render_scene(const ScenePtr& scene, const CameraPtr& camera)
 {
@@ -204,7 +224,7 @@ void Renderer::_render_entity(const Entity& entity)
     CHECK_ERR();
 }
 */
-void Renderer::_reset_state()
+void Renderer::reset()
 {
     using namespace std;
     

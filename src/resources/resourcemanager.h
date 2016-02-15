@@ -29,7 +29,7 @@ private:
     using ProgramMap = std::map<std::string, Program>;
     using MeshMap = std::map<std::string, Mesh>;
     using TextureMap = std::map<std::string, Texture>;
-    using SpriteMap = std::map<std::string, Sprite>;
+    using SpriteMap = std::map<std::string, SpritePtr>;
 
     using TextProgramMap = std::map<std::string, TextProgram>;    
     using TextMeshMap = std::map<std::string, TextMesh>;    
@@ -57,7 +57,7 @@ public:
 
     Texture entity_texture(const std::string& texture_name);
 
-    Sprite entity_sprite(const std::string& sprite_name);
+    Sprite* entity_sprite(const std::string& sprite_name);
 
     TextProgram text_program(const std::string& vs_name,
 			 const std::string& fs_name);

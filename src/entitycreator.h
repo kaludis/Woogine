@@ -19,7 +19,7 @@ public:
     {}
 
     IVisualEntityPtr create_entity(const std::string& entity_name,
-			 const std::string& entity_model);
+				   const std::string& entity_model, bool is_dynamic);
 
     Text create_text(const std::string& entity_name,
 		     const std::string& text, const Point2f& position,

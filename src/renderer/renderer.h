@@ -27,20 +27,22 @@ public:
     void render(const Entity& entity) override;
 
     void render_text(const Text& text) override;
+
+    void reset() override;    
     
     //void render_scene(const ScenePtr& scene, const CameraPtr& camera);
 
-    void set_window(IWindow* window);
+    void set_window(IWindow* window) override;
 
     void set_camera(ICamera* camera) override;
     
 private:
-    void _reset_state();
-
     //void _render_entity(const Entity& entity);
 
     void _render_entity(const EntityResources& eres, const glm::mat4& model_matrix);
 
+    void _render_texture(const EntityResources& eres);
+    
     void _render_sprite(const Sprite& sprite);
 
     //void _render_text(const Text& text);
@@ -69,9 +71,7 @@ using RendererPtr = std::unique_ptr<Renderer>;
 inline
 Renderer::Renderer()
     : _ptxtman{new TextManager{"../fonts/DejaVuSansMono.ttf"}}
-{
-    _reset_state();
-}
+{}
 
 inline
 void Renderer::set_window(IWindow* window)

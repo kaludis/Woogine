@@ -9,5 +9,5 @@ struct EntityResources {
     Program program;
     Mesh mesh;
     Texture texture;
-    Sprite sprite;
+    Sprite* sprite;
 };

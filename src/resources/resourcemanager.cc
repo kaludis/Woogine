@@ -60,16 +60,17 @@ Mesh ResourceManager::entity_mesh(const std::string& mesh_name)
 
 Texture ResourceManager::entity_texture(const std::string& texture_name)
 {
+    DEBUG_PRINT("22 Texture name %s\n", texture_name.c_str());
+    if (!texture_name.length()) return Texture{std::numeric_limits<unsigned int>::max()};
+    
     auto it = _texture_map.find(texture_name);
     if (it == _texture_map.end()) {
-	//	std::string tex_file = _pfsresolver->texture_file(entity_type);
-	
 	TextureRawDataPtr tex_rd = _ptexdatareader->read_texture_data(texture_name);
-	
+	DEBUG_MSG("22\n");
 	Texture new_tex = _create_texture(*tex_rd);
-	
+	DEBUG_MSG("33\n");	
 	unsigned int max = std::numeric_limits<unsigned int>::max();
-	
+	DEBUG_MSG("44\n");	
 	if (new_tex.tex_id == max) {
 	    throw ResourceManagerException{"Could not create OpenGL texture"};
 	}
@@ -81,8 +82,10 @@ Texture ResourceManager::entity_texture(const std::string& texture_name)
     }
 }
 
-Sprite ResourceManager::entity_sprite(const std::string& sprite_name)
+Sprite* ResourceManager::entity_sprite(const std::string& sprite_name)
 {
+    if (!sprite_name.length()) return nullptr;
+    
     auto it = _sprite_map.find(sprite_name);
     if (it == _sprite_map.end()) {
 	SpriteRawDataPtr sprite_rd = _pspritedatareader->read_sprite_data(sprite_name);
@@ -93,11 +96,12 @@ Sprite ResourceManager::entity_sprite(const std::string& sprite_name)
 	SpritePtr sprite = _create_sprite(*sprite_rd);
 	sprite->_texture_id = new_tex.tex_id;
 
-	_sprite_map[sprite_name] = *sprite;
+	Sprite* tmp = sprite.get();
+	_sprite_map.insert(std::make_pair(sprite_name, SpritePtr{sprite.release()}));
 
-	return *sprite;
+	return tmp;
     } else {
-	return it->second;
+	return it->second.get();
     }
 }
 
@@ -312,19 +316,22 @@ Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
 Texture ResourceManager::_create_texture(const TextureRawData& tex_rd)
 {
     GLuint tex_id{0};
-    
+
     glGenTextures(1, &tex_id);
     CHECK_ERR();
-    
+
     glBindTexture(GL_TEXTURE_2D, tex_id);
     CHECK_ERR();
-    
+
     if (glIsTexture(tex_id) != GL_TRUE) {
 	return Texture{std::numeric_limits<unsigned int>::max()};
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     CHECK_ERR();
+
+    tex_rd.data.data();
+    DEBUG_PRINT("%ux%u: %u bytes\n", tex_rd.width, tex_rd.height, tex_rd.data.size());
     
     glTexImage2D(
 		 GL_TEXTURE_2D,
