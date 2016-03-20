@@ -36,6 +36,7 @@ Program ResourceManager::entity_program(const std::string& vs_name,
 Mesh ResourceManager::entity_mesh(const std::string& mesh_name)
 {
     auto it = _mesh_map.find(mesh_name);
+
     if (it == _mesh_map.end()) {
 	//	std::string mesh_file = _pfsresolver->mesh_file(entity_type);
 	
@@ -58,19 +59,26 @@ Mesh ResourceManager::entity_mesh(const std::string& mesh_name)
     }
 }
 
-Texture ResourceManager::entity_texture(const std::string& texture_name)
+Texture ResourceManager::entity_texture(const std::string& texture_name, const std::string& type)
 {
-    DEBUG_PRINT("22 Texture name %s\n", texture_name.c_str());
     if (!texture_name.length()) return Texture{std::numeric_limits<unsigned int>::max()};
     
     auto it = _texture_map.find(texture_name);
+
     if (it == _texture_map.end()) {
 	TextureRawDataPtr tex_rd = _ptexdatareader->read_texture_data(texture_name);
-	DEBUG_MSG("22\n");
-	Texture new_tex = _create_texture(*tex_rd);
-	DEBUG_MSG("33\n");	
+
+	TextureRawData::TextureType ttype;
+	if (type == "simple" || !type.size()) {
+	    ttype = TextureRawData::TextureType::Simple;
+	} else {
+	    ttype = TextureRawData::TextureType::Tiled;
+	}	
+
+	Texture new_tex = _create_texture(*tex_rd, ttype);
+
 	unsigned int max = std::numeric_limits<unsigned int>::max();
-	DEBUG_MSG("44\n");	
+
 	if (new_tex.tex_id == max) {
 	    throw ResourceManagerException{"Could not create OpenGL texture"};
 	}
@@ -87,6 +95,7 @@ Sprite* ResourceManager::entity_sprite(const std::string& sprite_name)
     if (!sprite_name.length()) return nullptr;
     
     auto it = _sprite_map.find(sprite_name);
+
     if (it == _sprite_map.end()) {
 	SpriteRawDataPtr sprite_rd = _pspritedatareader->read_sprite_data(sprite_name);
 
@@ -313,7 +322,8 @@ Mesh ResourceManager::_create_mesh(const MeshRawDataPtr& mesh_rd)
     return Mesh{vbo_ids[0], vbo_ids[1], vbo_ids[2],  static_cast<GLuint>(mesh_rd->indices.size())};
 }
 
-Texture ResourceManager::_create_texture(const TextureRawData& tex_rd)
+Texture ResourceManager::_create_texture(const TextureRawData& tex_rd, 
+					 TextureRawData::TextureType type)
 {
     GLuint tex_id{0};
 
@@ -327,11 +337,18 @@ Texture ResourceManager::_create_texture(const TextureRawData& tex_rd)
 	return Texture{std::numeric_limits<unsigned int>::max()};
     }
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+
+    if (type == TextureRawData::TextureType::Tiled) {
+	DEBUG_MSG("Tiled texture\n");
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+
     CHECK_ERR();
 
-    tex_rd.data.data();
-    DEBUG_PRINT("%ux%u: %u bytes\n", tex_rd.width, tex_rd.height, tex_rd.data.size());
+    //tex_rd.data.data();
     
     glTexImage2D(
 		 GL_TEXTURE_2D,

@@ -55,7 +55,7 @@ public:
 
     Mesh entity_mesh(const std::string& mesh_name);
 
-    Texture entity_texture(const std::string& texture_name);
+    Texture entity_texture(const std::string& texture_name, const std::string& type);
 
     Sprite* entity_sprite(const std::string& sprite_name);
 
@@ -73,7 +73,9 @@ private:
 
     Mesh _create_mesh(const MeshRawDataPtr& mesh_rd);
 
-    Texture _create_texture(const TextureRawData& tex_rd);
+    Texture _create_texture(const TextureRawData& tex_rd, 
+			    TextureRawData::TextureType type = 
+			    TextureRawData::TextureType::Simple);
 
     SpritePtr _create_sprite(const SpriteRawData& sprite_rd);
 
