@@ -18,6 +18,7 @@
 #include "../src/controller/abstractcontroller.h"
 #include "../src/controller/controller.h"
 #include "../src/scene.h"
+#include "../src/entity/abstractvisualentity.h"
 
 #include "../src/debug/debug.h"
 
@@ -46,10 +47,17 @@ int main()
 	//scene->add_entity(ecreator.create_entity("object1", "quad"));
 	//DEBUG_PRINT("New entity: %s\n", ecreator.create_entity("runmen", "runmen")->name().c_str());
 	scene->add_entity(ecreator.create_entity("background", "background", false));
+
 	scene->add_entity(ecreator.create_entity("runmen", "runmen", true));
 
 	scene->add_text("fps", ecreator.create_text("fps_text", "0 fps",
 						    Point2f{5.0f, 5.0f}, 0.8f));
+
+	const Scene::EntityPtrList& list = scene->entity_list();
+	for (const IVisualEntityPtr& entity : list) {
+	    std::cout << entity->name() << std::endl;
+	}
+
 	core.show_fps(true);
 	while (core.is_running()) {
 	    core.run_scene(scene);

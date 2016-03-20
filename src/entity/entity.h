@@ -30,7 +30,7 @@ public:
 	_model_matrix(1.0f),
 	_is_dynamic{is_dynamic},
 	_position{Point2f{}},
-	_velocity{0.01f},
+	_velocity{0.03f},
 	_is_init{false}
     {}
 

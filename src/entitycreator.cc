@@ -18,8 +18,11 @@ EntityCreator::create_entity(const std::string& entity_name, const std::string& 
     
     Entity* entity= new Entity{entity_name, is_dynamic};
     entity->_res.program = _presman->entity_program(_vs_file, _fs_file);
+
     entity->_res.mesh = _presman->entity_mesh(_data_file);
-    entity->_res.texture = _presman->entity_texture(_texture_file);
+
+    entity->_res.texture = _presman->entity_texture(_texture_file, _texture_type);
+
     entity->_res.sprite = _presman->entity_sprite(_sprite_file);
 
     return IVisualEntityPtr{entity};
@@ -60,7 +63,8 @@ void EntityCreator::_entity_files()
 	    _fs_file = slist[2];
 	    _data_file = slist[3];
 	    _texture_file = slist[4];
-	    _sprite_file = slist[5];
+	    _texture_type = slist[5];
+	    _sprite_file = slist[6];
 	    filled = true;
 	}
     }

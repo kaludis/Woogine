@@ -4,6 +4,11 @@
 #include <memory>
 
 struct TextureRawData {
+    enum class TextureType {
+	Simple,
+	    Tiled
+    };
+
     std::vector<unsigned char> data;
     unsigned int width;
     unsigned int height;

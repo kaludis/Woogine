@@ -40,6 +40,7 @@ private:
     std::string _fs_file;
     std::string _data_file;
     std::string _texture_file;
+    std::string _texture_type;
     std::string _sprite_file;
 };
 
